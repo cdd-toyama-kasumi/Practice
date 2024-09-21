@@ -9,6 +9,9 @@
 class UCameraComponent;
 class USpringArmComponent;
 class UCharacterMovementComponent;
+class UInputMappingContext;
+class UInputAction;
+struct FInputActionValue;
 
 UCLASS()
 class PRACTICE_API AMainCharacter : public ACharacter
@@ -19,28 +22,43 @@ public:
 	// Sets default values for this character's properties
 	AMainCharacter();
 
+	//第一第三人称切换
+	void SwitchPerspective();
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	
+	void Move(const FInputActionValue& Value);
 
+	void Look(const FInputActionValue& Value);
+	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
+	
+	UPROPERTY(Category=Input, VisibleAnywhere)
+	bool IsMove;
+	
 private:
-	void GenerateMainCamera();
 	void Construct();
+	void GenerateMainCamera();
 	void GenerateMainBody();
 	
+	void FirstPerson() const;
+	void ThirdPerson() const;
+	
+	UPROPERTY(Category=Camera, EditAnywhere)
+	bool bUseFirstPerson = false;
+	
 private:
-
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(Category=Character, EditDefaultsOnly)
 	TObjectPtr<UStaticMeshComponent> MeshComponentHalo;
 	
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(Category=Character, EditDefaultsOnly)
 	TObjectPtr<USpringArmComponent> SpringArmComponentHalo;
 	
 	UPROPERTY(Category=Character, VisibleAnywhere, meta=(AllowPrivateAccess = "true"))
@@ -51,7 +69,19 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USpringArmComponent> SpringArmComponent;
-	
-	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<UCharacterMovementComponent> CharacterMovementComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputMappingContext> DefaultMappingContext;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> JumpAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> MoveAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> LookAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> ViewAction;
 };
