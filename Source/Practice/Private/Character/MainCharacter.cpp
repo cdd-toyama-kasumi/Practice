@@ -180,9 +180,9 @@ void AMainCharacter::SwitchAnim()
 		IsJumpCouldPlay = true;
 		IsWalkCouldPlay = true;
 		IsIdleCouldPlay = false;
-		GetWorldTimerManager().SetTimer(IdleActionTimerHandle,this,&AMainCharacter::PlayIdleAction,5.0f,true);
-		GetWorldTimerManager().ClearTimer(IdleTimerHandle);
 		PlayAnim(Idle,true);
+		GetWorldTimerManager().SetTimer(IdleActionTimerHandle,this,&AMainCharacter::PlayIdleAction,6.0f,true);
+		GetWorldTimerManager().ClearTimer(IdleTimerHandle);
 	}
 	else
 	{
@@ -191,10 +191,10 @@ void AMainCharacter::SwitchAnim()
 			IsJumpCouldPlay = true;
 			IsWalkCouldPlay = true;
 			IsIdleActionCouldPlay = false;
-			GetWorldTimerManager().SetTimer(IdleTimerHandle,this,&AMainCharacter::PlayDefaultIdle,3.0f,true);
-			GetWorldTimerManager().ClearTimer(IdleActionTimerHandle);
 			int32_t RandIndex = FMath::RandRange(0,IdleActionArray.Num()-1);
 			PlayAnim(IdleActionArray[RandIndex],false);
+			GetWorldTimerManager().SetTimer(IdleTimerHandle,this,&AMainCharacter::PlayDefaultIdle,AnimSequence->GetPlayLength(),true);
+			GetWorldTimerManager().ClearTimer(IdleActionTimerHandle);
 		}
 	}
 }
