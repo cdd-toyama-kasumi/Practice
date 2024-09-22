@@ -24,11 +24,7 @@ public:
 
 	//第一第三人称切换
 	void SwitchPerspective();
-	/*//环视
-	void Sweep();
-	void StopSweep();*/
 
-	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -39,30 +35,57 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	
-	UPROPERTY(Category=Input, VisibleAnywhere)
-	bool IsMove;
-	
+
 private:
 	void Construct();
 	void GenerateMainCamera();
 	void GenerateMainBody();
+
+private:
+	FString Idle = TEXT("AnimSequence'/Game/Mine/Airi/AnimSequence/idle_Anim.idle_Anim'");
+	FString Walk = TEXT("AnimSequence'/Game/Mine/Airi/AnimSequence/walk_Anim.walk_Anim'");
+	FString JumpAnim = TEXT("AnimSequence'/Game/Mine/Airi/AnimSequence/action_Anim.action_Anim'");
+	FString JumpLoopAnim = TEXT("AnimSequence'/Game/Mine/Airi/AnimSequence/action_Anim.action_Anim'");
+	FString IdleActionAnim1 = TEXT("AnimSequence'/Game/Mine/Airi/AnimSequence/idleAction_Anim1.idleAction_Anim1'");
+	FString IdleActionAnim2 = TEXT("AnimSequence'/Game/Mine/Airi/AnimSequence/idleAction_Anim2.idleAction_Anim2'");
 	
-
-
+	TArray<FString> IdleActionArray;
 protected:
 	void Move(const FInputActionValue& Value);
 
 	void Look(const FInputActionValue& Value);
+	
+	void Jump(const FInputActionValue& Value);
 
+	void StopJumping(const FInputActionValue& Value);
+	
 	void Zoom(const FInputActionValue& Value);
 	
 	void FirstPerson();
 	
 	void ThirdPerson();
 	
+	void PlayAnim(FString Value, bool Loop = false);
+
+	void SwitchAnim();
+	
+	void PlayIdleAction();
+	void PlayDefaultIdle();
+	
+	FString GetPlayingAnimName();
+	
+	FTimerHandle IdleActionTimerHandle;
+	FTimerHandle IdleTimerHandle;
 	UPROPERTY(Category=Camera, EditAnywhere)
 	bool bUseFirstPerson = false;
+	
+	UPROPERTY(Category=Input, VisibleAnywhere)
+	bool IsMove = false;
+
+	bool IsIdleCouldPlay = true;
+	bool IsWalkCouldPlay = true;
+	bool IsJumpCouldPlay = true;
+	bool IsIdleActionCouldPlay = false;
 	
 private:
 	UPROPERTY(Category=Character, EditDefaultsOnly)
@@ -94,10 +117,11 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> ViewAction;
-
-	/*UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UInputAction> SweepAction;*/
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> ZoomAction;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Anime, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UAnimSequence> AnimSequence;
+	
 };

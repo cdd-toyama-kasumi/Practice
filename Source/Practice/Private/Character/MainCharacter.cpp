@@ -9,6 +9,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Tools/log.h"
 
 // Sets default values
@@ -19,9 +20,10 @@ AMainCharacter::AMainCharacter()
 	Construct();
 }
 
-void AMainCharacter::SwitchPerspective()
+// Called when the game starts or when spawned
+void AMainCharacter::BeginPlay()
 {
-	bUseFirstPerson = !bUseFirstPerson;
+	Super::BeginPlay();
 	if(bUseFirstPerson)
 	{
 		FirstPerson();
@@ -30,38 +32,15 @@ void AMainCharacter::SwitchPerspective()
 	{
 		ThirdPerson();
 	}
+	PlayAnim(Idle,true);
 }
-
-void AMainCharacter::Zoom(const FInputActionValue& Value)
-{
-	if(bUseFirstPerson) return;
-	SpringArmComponent->TargetArmLength = FMath::Clamp(SpringArmComponent->TargetArmLength + Value.Get<float>() * 50.0f,50.0f,300.0f);
-}
-
-/*
-void AMainCharacter::Sweep()
-{
-	if(bUseFirstPerson == false)
-	{
-		bUseControllerRotationYaw = false;
-	}
-}
-
-void AMainCharacter::StopSweep()
-{
-	if(bUseFirstPerson == false)
-	{
-		//FMath::RInterpTo(GetController()->GetControlRotation(),GetActorRotation(),GetWorld()->DeltaTimeSeconds,10.0f)
-		GetController()->SetControlRotation(GetActorRotation());
-		//bUseControllerRotationYaw = true;
-	}
-}
-*/
 
 void AMainCharacter::Construct()
 {
 	GetCapsuleComponent()->SetCapsuleHalfHeight(54.0f);
 	GetCapsuleComponent()->SetCapsuleRadius(30.0f);
+	
+	IdleActionArray = {IdleActionAnim1,IdleActionAnim2};
 	
 	GenerateMainBody();
 	GenerateMainCamera();
@@ -96,6 +75,29 @@ void AMainCharacter::GenerateMainBody()
 	GetMesh()->SetSkeletalMesh(SkeletalMeshBody);
 }
 
+void AMainCharacter::GenerateMainCamera()
+{
+	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComponent"));
+	SpringArmComponent->SetupAttachment(GetCapsuleComponent());
+	SpringArmComponent->bUsePawnControlRotation = true;
+	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComponent"));
+	CameraComponent->SetupAttachment(SpringArmComponent, TEXT("SpringEndpoint"));
+	ThirdPerson();
+}
+
+void AMainCharacter::SwitchPerspective()
+{
+	bUseFirstPerson = !bUseFirstPerson;
+	if(bUseFirstPerson)
+	{
+		FirstPerson();
+	}
+	else
+	{
+		ThirdPerson();
+	}
+}
+
 void AMainCharacter::FirstPerson()
 {
 	SpringArmComponent->TargetArmLength = 0.0f;
@@ -115,35 +117,110 @@ void AMainCharacter::ThirdPerson()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 }
 
-void AMainCharacter::GenerateMainCamera()
+void AMainCharacter::Zoom(const FInputActionValue& Value)
 {
-	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComponent"));
-	SpringArmComponent->SetupAttachment(GetCapsuleComponent());
-	SpringArmComponent->bUsePawnControlRotation = true;
-	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComponent"));
-	CameraComponent->SetupAttachment(SpringArmComponent, TEXT("SpringEndpoint"));
-	ThirdPerson();
+	if(bUseFirstPerson) return;
+	SpringArmComponent->TargetArmLength = FMath::Clamp(SpringArmComponent->TargetArmLength + Value.Get<float>() * 50.0f,50.0f,300.0f);
 }
 
-// Called when the game starts or when spawned
-void AMainCharacter::BeginPlay()
+void AMainCharacter::PlayAnim(FString Value, bool Loop)
 {
-	Super::BeginPlay();
-	if(bUseFirstPerson)
+	AnimSequence = LoadObject<UAnimSequence>(nullptr,*Value);
+	if(AnimSequence)
 	{
-		FirstPerson();
+		GetMesh()->SetAnimationMode(EAnimationMode::AnimationSingleNode);
+		GetMesh()->SetAnimation(AnimSequence);
+		GetMesh()->Play(Loop);
+	}
+}
+
+void AMainCharacter::SwitchAnim()
+{
+	bool IsFalling = GetCharacterMovement()->IsFalling();
+	bool IsCrouching = GetCharacterMovement()->IsCrouching();
+	bool IsPlaying = GetMesh()->IsPlaying();
+	bool IsJumpStart = GetPlayingAnimName() == JumpAnim;
+
+	FString Status = FString::Printf(TEXT("IsFalling:%s IsCrouching:%s IsPlaying:%s IsJumpStart:%s IsJumpCouldPlay:%s IsWalkCouldPlay:%s IsIdleCouldPlay:%s IsIdleActionCouldPlay:%s "),
+		IsFalling ? TEXT("True") : TEXT("False"),
+		IsCrouching ? TEXT("True") : TEXT("False"),
+		IsPlaying ? TEXT("True") : TEXT("False"),
+		IsJumpStart ? TEXT("True") : TEXT("False"),
+		IsJumpCouldPlay ? TEXT("True") : TEXT("False"),
+		IsWalkCouldPlay ? TEXT("True") : TEXT("False"),
+		IsIdleCouldPlay ? TEXT("True") : TEXT("False"),
+		IsIdleActionCouldPlay ? TEXT("True") : TEXT("False")) + GetPlayingAnimName();
+	
+	LogScreenRaw(0.5f,Status);
+	
+	if(IsFalling && IsJumpCouldPlay)
+	{
+		IsJumpCouldPlay = false;
+		IsWalkCouldPlay = true;
+		IsIdleCouldPlay = true;
+		IsIdleActionCouldPlay = false;
+		if(IsJumpStart && !IsPlaying)
+		{
+			PlayAnim(JumpLoopAnim);
+		}
+	}
+	else if(UKismetMathLibrary::VSize(GetVelocity()) > 0.0f)
+	{
+		if(IsWalkCouldPlay && !IsFalling)
+		{
+			IsJumpCouldPlay = true;
+			IsWalkCouldPlay = false;
+			IsIdleCouldPlay = true;
+			IsIdleActionCouldPlay = false;
+			PlayAnim(Walk,true);
+		}
+	}
+	else if(IsIdleCouldPlay && !IsFalling)
+	{
+		IsJumpCouldPlay = true;
+		IsWalkCouldPlay = true;
+		IsIdleCouldPlay = false;
+		GetWorldTimerManager().SetTimer(IdleActionTimerHandle,this,&AMainCharacter::PlayIdleAction,5.0f,true);
+		GetWorldTimerManager().ClearTimer(IdleTimerHandle);
+		PlayAnim(Idle,true);
 	}
 	else
 	{
-		ThirdPerson();
+		if(IsIdleActionCouldPlay && !IsFalling)
+		{
+			IsJumpCouldPlay = true;
+			IsWalkCouldPlay = true;
+			IsIdleActionCouldPlay = false;
+			GetWorldTimerManager().SetTimer(IdleTimerHandle,this,&AMainCharacter::PlayDefaultIdle,3.0f,true);
+			GetWorldTimerManager().ClearTimer(IdleActionTimerHandle);
+			int32_t RandIndex = FMath::RandRange(0,IdleActionArray.Num()-1);
+			PlayAnim(IdleActionArray[RandIndex],false);
+		}
 	}
 }
+
+void AMainCharacter::PlayIdleAction()
+{
+	IsIdleActionCouldPlay = true;
+	IsIdleCouldPlay = false;
+}
+
+void AMainCharacter::PlayDefaultIdle()
+{
+	IsIdleCouldPlay = true;
+}
+
+FString AMainCharacter::GetPlayingAnimName()
+{
+	return GetNameSafe(AnimSequence);
+}
+
 
 void AMainCharacter::Move(const FInputActionValue& Value)
 {
 	// input is a Vector2D
 	FVector2D MovementVector = Value.Get<FVector2D>();
-	IsMove = true;
+	GetWorldTimerManager().ClearTimer(IdleActionTimerHandle);
 	if (Controller != nullptr)
 	{
 		// find out which way is forward
@@ -159,7 +236,7 @@ void AMainCharacter::Move(const FInputActionValue& Value)
 		AddMovementInput(ForwardDirection, MovementVector.Y);
 		AddMovementInput(RightDirection, MovementVector.X);
 	}
-	IsMove = false;
+
 }
 
 void AMainCharacter::Look(const FInputActionValue& Value)
@@ -174,11 +251,27 @@ void AMainCharacter::Look(const FInputActionValue& Value)
 	}
 }
 
+void AMainCharacter::Jump(const FInputActionValue& Value)
+{
+	bool IsFalling = GetCharacterMovement()->IsFalling();
+	GetWorldTimerManager().ClearTimer(IdleActionTimerHandle);
+	if(!IsFalling)
+	{
+		PlayAnim(JumpAnim);
+	}
+	Super::Jump();
+}
+
+void AMainCharacter::StopJumping(const FInputActionValue& Value)
+{
+	Super::StopJumping();
+}
+
 // Called every frame
 void AMainCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	SwitchAnim();
 }
 
 // Called to bind functionality to input
@@ -195,17 +288,14 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	// Set up action bindings
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
 		
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AMainCharacter::Jump);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &AMainCharacter::StopJumping);
 		
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AMainCharacter::Move);
-		
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMainCharacter::Look);
 		EnhancedInputComponent->BindAction(ViewAction, ETriggerEvent::Started, this, &AMainCharacter::SwitchPerspective);
 
 		EnhancedInputComponent->BindAction(ZoomAction, ETriggerEvent::Started, this, &AMainCharacter::Zoom);
-		/*EnhancedInputComponent->BindAction(SweepAction, ETriggerEvent::Triggered, this, &AMainCharacter::Sweep);
-		EnhancedInputComponent->BindAction(SweepAction, ETriggerEvent::Completed, this, &AMainCharacter::StopSweep);*/
 	}
 	else
 	{

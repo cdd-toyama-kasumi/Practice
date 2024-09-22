@@ -46,9 +46,9 @@
 #define EnsureNotEqual(Var1, Var2)		LogEnsure(Var1 != Var2, "`" #Var1 "` == `" #Var2 "`!")
 
 //Screen Log
-#define LogScreenRed(Message) GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString(Message) + __FILE__ + FString::FromInt(__LINE__))
-#define LogScreenYellow(Message) GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Yellow, FString(Message) + __FILE__ + FString::FromInt(__LINE__))
-#define LogScreenBlue(Message) GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Blue, FString(Message) + __FILE__ + FString::FromInt(__LINE__))
-#define LogScreen(Message) GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::White, FString(Message) + __FILE__ + FString::FromInt(__LINE__))
-#define LogScreenRaw(Message) GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::White, Message)
+#define LogScreenRed(Life,Message) GEngine->AddOnScreenDebugMessage(-1, Life, FColor::Red, FString(Message) + __FILE__ + FString::FromInt(__LINE__))
+#define LogScreenYellow(Life,Message) GEngine->AddOnScreenDebugMessage(-1, Life, FColor::Yellow, FString(Message) + __FILE__ + FString::FromInt(__LINE__))
+#define LogScreenBlue(Life,Message) GEngine->AddOnScreenDebugMessage(-1, Life, FColor::Blue, FString(Message) + __FILE__ + FString::FromInt(__LINE__))
+#define LogScreen(Life,Message) GEngine->AddOnScreenDebugMessage(-1, Life, FColor::White, FString(Message) + __FILE__ + FString::FromInt(__LINE__))
+#define LogScreenRaw(Life,Message) GEngine->AddOnScreenDebugMessage(-1, Life, FColor::White, Message)
 ///////////////////////////// Log Helpers ///////////////
