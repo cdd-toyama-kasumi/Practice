@@ -24,15 +24,15 @@ public:
 
 	//第一第三人称切换
 	void SwitchPerspective();
+	/*//环视
+	void Sweep();
+	void StopSweep();*/
+
 	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	
-	void Move(const FInputActionValue& Value);
 
-	void Look(const FInputActionValue& Value);
-	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -48,8 +48,18 @@ private:
 	void GenerateMainCamera();
 	void GenerateMainBody();
 	
-	void FirstPerson() const;
-	void ThirdPerson() const;
+
+
+protected:
+	void Move(const FInputActionValue& Value);
+
+	void Look(const FInputActionValue& Value);
+
+	void Zoom(const FInputActionValue& Value);
+	
+	void FirstPerson();
+	
+	void ThirdPerson();
 	
 	UPROPERTY(Category=Camera, EditAnywhere)
 	bool bUseFirstPerson = false;
@@ -84,4 +94,10 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> ViewAction;
+
+	/*UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> SweepAction;*/
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> ZoomAction;
 };

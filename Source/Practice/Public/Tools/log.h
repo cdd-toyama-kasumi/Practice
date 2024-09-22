@@ -7,7 +7,7 @@
 #define DEFAULT_LOG_CATEGORY LogTemp
 
 // e.g. AActor::BeginPlay() => <Your Message> ["\Path\To\Actor.cpp:299"]
-//EXPAND UE_LOG(LogTemp, XX, TEXT("%hs() => ") TEXT("%hs") TEXT("%hs->%d"), __FUNCTION__, "Construct" ,__FILE__, __LINE__)
+//EXPAND UE_LOG(LogTemp, XX, TEXT("%hs() => ") TEXT(RawMessage) TEXT("%hs->%d"), __FUNCTION__ ,__FILE__, __LINE__)
 #define DEFAULT_LOG_MESSAGE(RawMessage) TEXT("%hs() => ") TEXT(RawMessage) TEXT(" [\"%hs:%d\"]")
 
 // __FUNCTION__, Type: %hs, e.g.: AActor::BeginPlay
@@ -45,4 +45,10 @@
 #define EnsureEqual(Var1, Var2)			LogEnsure(Var1 == Var2, "`" #Var1 "` != `" #Var2 "`!")
 #define EnsureNotEqual(Var1, Var2)		LogEnsure(Var1 != Var2, "`" #Var1 "` == `" #Var2 "`!")
 
+//Screen Log
+#define LogScreenRed(Message) GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString(Message) + __FILE__ + FString::FromInt(__LINE__))
+#define LogScreenYellow(Message) GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Yellow, FString(Message) + __FILE__ + FString::FromInt(__LINE__))
+#define LogScreenBlue(Message) GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Blue, FString(Message) + __FILE__ + FString::FromInt(__LINE__))
+#define LogScreen(Message) GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::White, FString(Message) + __FILE__ + FString::FromInt(__LINE__))
+#define LogScreenRaw(Message) GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::White, Message)
 ///////////////////////////// Log Helpers ///////////////

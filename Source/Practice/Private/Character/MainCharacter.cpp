@@ -32,10 +32,34 @@ void AMainCharacter::SwitchPerspective()
 	}
 }
 
+void AMainCharacter::Zoom(const FInputActionValue& Value)
+{
+	if(bUseFirstPerson) return;
+	SpringArmComponent->TargetArmLength = FMath::Clamp(SpringArmComponent->TargetArmLength + Value.Get<float>() * 50.0f,50.0f,300.0f);
+}
+
+/*
+void AMainCharacter::Sweep()
+{
+	if(bUseFirstPerson == false)
+	{
+		bUseControllerRotationYaw = false;
+	}
+}
+
+void AMainCharacter::StopSweep()
+{
+	if(bUseFirstPerson == false)
+	{
+		//FMath::RInterpTo(GetController()->GetControlRotation(),GetActorRotation(),GetWorld()->DeltaTimeSeconds,10.0f)
+		GetController()->SetControlRotation(GetActorRotation());
+		//bUseControllerRotationYaw = true;
+	}
+}
+*/
+
 void AMainCharacter::Construct()
 {
-	LogDefault("Construct");
-
 	GetCapsuleComponent()->SetCapsuleHalfHeight(54.0f);
 	GetCapsuleComponent()->SetCapsuleRadius(30.0f);
 	
@@ -72,16 +96,23 @@ void AMainCharacter::GenerateMainBody()
 	GetMesh()->SetSkeletalMesh(SkeletalMeshBody);
 }
 
-void AMainCharacter::FirstPerson() const
+void AMainCharacter::FirstPerson()
 {
 	SpringArmComponent->TargetArmLength = 0.0f;
 	SpringArmComponent->SetRelativeLocation(FVector(20.0f,0.0f,20.0f));
+	bUseControllerRotationYaw = true;
+    bUseControllerRotationRoll = false;
+    bUseControllerRotationPitch = false;
 }
 
-void AMainCharacter::ThirdPerson() const
+void AMainCharacter::ThirdPerson()
 {
-	SpringArmComponent->TargetArmLength = 160.0f;
-	SpringArmComponent->SetRelativeLocation(FVector(0.0f,-40.0f,20.0f));
+	SpringArmComponent->TargetArmLength = 300.0f;
+	SpringArmComponent->SetRelativeLocation(FVector(0.0f,0.0f,0.0f));
+	bUseControllerRotationYaw = false;
+	bUseControllerRotationRoll = false;
+	bUseControllerRotationPitch = false;
+	GetCharacterMovement()->bOrientRotationToMovement = true;
 }
 
 void AMainCharacter::GenerateMainCamera()
@@ -91,6 +122,7 @@ void AMainCharacter::GenerateMainCamera()
 	SpringArmComponent->bUsePawnControlRotation = true;
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComponent"));
 	CameraComponent->SetupAttachment(SpringArmComponent, TEXT("SpringEndpoint"));
+	ThirdPerson();
 }
 
 // Called when the game starts or when spawned
@@ -170,6 +202,10 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMainCharacter::Look);
 		EnhancedInputComponent->BindAction(ViewAction, ETriggerEvent::Started, this, &AMainCharacter::SwitchPerspective);
+
+		EnhancedInputComponent->BindAction(ZoomAction, ETriggerEvent::Started, this, &AMainCharacter::Zoom);
+		/*EnhancedInputComponent->BindAction(SweepAction, ETriggerEvent::Triggered, this, &AMainCharacter::Sweep);
+		EnhancedInputComponent->BindAction(SweepAction, ETriggerEvent::Completed, this, &AMainCharacter::StopSweep);*/
 	}
 	else
 	{
