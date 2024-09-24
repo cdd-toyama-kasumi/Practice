@@ -10,7 +10,8 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "Tools/log.h"
+#include "Tools/Log.h"
+#include "Tools/Static.h"
 
 // Sets default values
 AMainCharacter::AMainCharacter()
@@ -32,7 +33,11 @@ void AMainCharacter::BeginPlay()
 	{
 		ThirdPerson();
 	}
-	PlayAnim(Idle,true);
+	if(UClass* AnimationClass = LoadObject<UClass>(nullptr,*AnimInstance))
+	{
+		GetMesh()->SetAnimInstanceClass(AnimationClass);
+	}
+	//PlayAnim(Idle,true);
 }
 
 void AMainCharacter::Construct()
@@ -68,8 +73,8 @@ void AMainCharacter::GenerateMainBody()
 	SpringArmComponentHalo->CameraRotationLagSpeed = 7.0f;
 	SpringArmComponentHalo->CameraLagMaxDistance = 14.0f;
 	
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> Halo(TEXT("StaticMesh'/Game/Mine/Airi/StaticMesh/Airi_Halo.Airi_Halo'"));
-	SkeletalMeshBody = LoadObject<USkeletalMesh>(nullptr,TEXT("SkeletalMesh'/Game/Mine/Airi/Airi_Character.Airi_Character'"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> HaloMesh(*Halo);
+	SkeletalMeshBody = LoadObject<USkeletalMesh>(nullptr,*SkeletalMesh);
 	
 	GetMesh()->SetRelativeLocation((FVector(0.0f,0.0f,-GetCapsuleComponent()->GetScaledCapsuleHalfHeight())));
 	GetMesh()->SetSkeletalMesh(SkeletalMeshBody);
@@ -251,7 +256,7 @@ void AMainCharacter::Look(const FInputActionValue& Value)
 	}
 }
 
-void AMainCharacter::Jump(const FInputActionValue& Value)
+void AMainCharacter::Jump()
 {
 	bool IsFalling = GetCharacterMovement()->IsFalling();
 	GetWorldTimerManager().ClearTimer(IdleActionTimerHandle);
@@ -262,7 +267,7 @@ void AMainCharacter::Jump(const FInputActionValue& Value)
 	Super::Jump();
 }
 
-void AMainCharacter::StopJumping(const FInputActionValue& Value)
+void AMainCharacter::StopJumping()
 {
 	Super::StopJumping();
 }
@@ -271,7 +276,7 @@ void AMainCharacter::StopJumping(const FInputActionValue& Value)
 void AMainCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	SwitchAnim();
+	//SwitchAnim();
 }
 
 // Called to bind functionality to input

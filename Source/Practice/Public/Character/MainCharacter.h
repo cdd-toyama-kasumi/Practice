@@ -42,12 +42,7 @@ private:
 	void GenerateMainBody();
 
 private:
-	FString Idle = TEXT("AnimSequence'/Game/Mine/Airi/AnimSequence/idle_Anim.idle_Anim'");
-	FString Walk = TEXT("AnimSequence'/Game/Mine/Airi/AnimSequence/walk_Anim.walk_Anim'");
-	FString JumpAnim = TEXT("AnimSequence'/Game/Mine/Airi/AnimSequence/action_Anim.action_Anim'");
-	FString JumpLoopAnim = TEXT("AnimSequence'/Game/Mine/Airi/AnimSequence/action_Anim.action_Anim'");
-	FString IdleActionAnim1 = TEXT("AnimSequence'/Game/Mine/Airi/AnimSequence/idleAction_Anim1.idleAction_Anim1'");
-	FString IdleActionAnim2 = TEXT("AnimSequence'/Game/Mine/Airi/AnimSequence/idleAction_Anim2.idleAction_Anim2'");
+
 	
 	TArray<FString> IdleActionArray;
 protected:
@@ -55,9 +50,9 @@ protected:
 
 	void Look(const FInputActionValue& Value);
 	
-	void Jump(const FInputActionValue& Value);
+	virtual void Jump() override;
 
-	void StopJumping(const FInputActionValue& Value);
+	virtual void StopJumping() override;
 	
 	void Zoom(const FInputActionValue& Value);
 	
