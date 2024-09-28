@@ -103,6 +103,11 @@ void AMainCharacter::SwitchPerspective()
 	}
 }
 
+bool AMainCharacter::IsRun()
+{
+	return IsRunning;
+}
+
 void AMainCharacter::FirstPerson()
 {
 	SpringArmComponent->TargetArmLength = 0.0f;
@@ -272,6 +277,18 @@ void AMainCharacter::StopJumping()
 	Super::StopJumping();
 }
 
+void AMainCharacter::Run()
+{
+	GetCharacterMovement()->MaxWalkSpeed = GetCharacterMovement()->MaxWalkSpeed * 3;
+	IsRunning = true;
+}
+
+void AMainCharacter::StopRunning()
+{
+	GetCharacterMovement()->MaxWalkSpeed = GetCharacterMovement()->MaxWalkSpeed / 3;
+	IsRunning = false;
+}
+
 // Called every frame
 void AMainCharacter::Tick(float DeltaTime)
 {
@@ -295,6 +312,8 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AMainCharacter::Jump);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &AMainCharacter::StopJumping);
+		EnhancedInputComponent->BindAction(RunAction, ETriggerEvent::Started, this, &AMainCharacter::Run);
+		EnhancedInputComponent->BindAction(RunAction, ETriggerEvent::Completed, this, &AMainCharacter::StopRunning);
 		
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AMainCharacter::Move);
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMainCharacter::Look);

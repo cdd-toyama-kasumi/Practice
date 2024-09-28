@@ -35,4 +35,5 @@ void UCloneAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	Speed = Velocity.Size();
 	IsFalling = CharacterMovementComponent->IsFalling();
 	Direction = UKismetAnimationLibrary::CalculateDirection(Velocity, MainCharacter->GetActorRotation());
+	IsRunning = MainCharacter->IsRun();
 }

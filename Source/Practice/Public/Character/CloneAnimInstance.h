@@ -36,5 +36,7 @@ public:
 	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	bool IsFalling = false;
-	
+
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
+	bool IsRunning = false;
 };

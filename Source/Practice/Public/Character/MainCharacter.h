@@ -25,6 +25,7 @@ public:
 	//第一第三人称切换
 	void SwitchPerspective();
 
+	bool IsRun();
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -42,9 +43,8 @@ private:
 	void GenerateMainBody();
 
 private:
-
-	
 	TArray<FString> IdleActionArray;
+	
 protected:
 	void Move(const FInputActionValue& Value);
 
@@ -54,6 +54,10 @@ protected:
 
 	virtual void StopJumping() override;
 	
+	void Run();
+	
+	void StopRunning();
+
 	void Zoom(const FInputActionValue& Value);
 	
 	void FirstPerson();
@@ -65,6 +69,7 @@ protected:
 	void SwitchAnim();
 	
 	void PlayIdleAction();
+	
 	void PlayDefaultIdle();
 	
 	FString GetPlayingAnimName();
@@ -81,6 +86,7 @@ protected:
 	bool IsWalkCouldPlay = true;
 	bool IsJumpCouldPlay = true;
 	bool IsIdleActionCouldPlay = false;
+	bool IsRunning = false;;
 	
 private:
 	UPROPERTY(Category=Character, EditDefaultsOnly)
@@ -107,6 +113,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> MoveAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> RunAction;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> LookAction;
 
