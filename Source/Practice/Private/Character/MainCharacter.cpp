@@ -279,13 +279,13 @@ void AMainCharacter::StopJumping()
 
 void AMainCharacter::Run()
 {
-	GetCharacterMovement()->MaxWalkSpeed = GetCharacterMovement()->MaxWalkSpeed * 3;
+	GetCharacterMovement()->MaxWalkSpeed = GetCharacterMovement()->MaxWalkSpeed * 2;
 	IsRunning = true;
 }
 
 void AMainCharacter::StopRunning()
 {
-	GetCharacterMovement()->MaxWalkSpeed = GetCharacterMovement()->MaxWalkSpeed / 3;
+	GetCharacterMovement()->MaxWalkSpeed = GetCharacterMovement()->MaxWalkSpeed / 2;
 	IsRunning = false;
 }
 

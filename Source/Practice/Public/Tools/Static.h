@@ -2,7 +2,7 @@
 
 inline FString Idle = TEXT("AnimSequence'/Game/Mine/Airi/AnimSequence/idle_Anim.idle_Anim'");
 inline FString Walk = TEXT("AnimSequence'/Game/Mine/Airi/AnimSequence/walk_Anim.walk_Anim'");
-inline FString JumpAnim = TEXT("AnimSequence'/Game/Mine/Airi/AnimSequence/action_Anim.action_Anim'");
+inline FString JumpAnim = TEXT("AnimSequence'/Game/Mine/Airi/AnimSequence/airi_Jump.airi_Jump'");
 inline FString JumpLoopAnim = TEXT("AnimSequence'/Game/Mine/Airi/AnimSequence/action_Anim.action_Anim'");
 inline FString IdleActionAnim1 = TEXT("AnimSequence'/Game/Mine/Airi/AnimSequence/idleAction_Anim1.idleAction_Anim1'");
 inline FString IdleActionAnim2 = TEXT("AnimSequence'/Game/Mine/Airi/AnimSequence/idleAction_Anim2.idleAction_Anim2'");
