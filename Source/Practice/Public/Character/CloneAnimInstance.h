@@ -21,6 +21,8 @@ public:
 
 	virtual void NativeInitializeAnimation() override;
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
+	void PlayDefaultIdle();
+	void PlayIdleAction();
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	TObjectPtr<AMainCharacter> MainCharacter;
@@ -37,6 +39,12 @@ public:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	bool IsFalling = false;
 
-	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
-	bool IsRunning = false;
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	bool IsIdleActionCouldPlay = false;
+
+	FTimerHandle IdleActionTimerHandle;
+	FTimerHandle IdleTimerHandle;
+
+	UPROPERTY(EditDefaultsOnly)
+	int32 IdleActionTime;
 };

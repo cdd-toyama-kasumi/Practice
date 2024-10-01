@@ -5,11 +5,13 @@
 #include "KismetAnimationLibrary.h"
 #include "Character/MainCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Tools/Log.h"
 
 UCloneAnimInstance::UCloneAnimInstance()
 {
 	Speed = 0.0f;
 	Direction = 0.0f;
+	IdleActionTime = 10.0f;
 }
 
 void UCloneAnimInstance::NativeInitializeAnimation()
@@ -20,7 +22,6 @@ void UCloneAnimInstance::NativeInitializeAnimation()
 	{
 		CharacterMovementComponent = MainCharacter->GetCharacterMovement();
 	}
-	
 }
 
 void UCloneAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -30,10 +31,36 @@ void UCloneAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	{
 		return;
 	}
-
+	
 	const FVector Velocity = MainCharacter->GetVelocity();
 	Speed = Velocity.Size();
 	IsFalling = CharacterMovementComponent->IsFalling();
 	Direction = UKismetAnimationLibrary::CalculateDirection(Velocity, MainCharacter->GetActorRotation());
-	IsRunning = MainCharacter->IsRun();
+
+	if(Speed > 0.0f)
+	{
+		IsIdleActionCouldPlay = false;
+		MainCharacter->GetWorldTimerManager().ClearTimer(IdleActionTimerHandle);
+	}
+	else
+	{
+		if(!IdleActionTimerHandle.IsValid())
+		{
+			MainCharacter->GetWorldTimerManager().SetTimer(IdleActionTimerHandle,this,&UCloneAnimInstance::PlayIdleAction,IdleActionTime,true);
+		}
+	}
+}
+
+void UCloneAnimInstance::PlayDefaultIdle()
+{
+	LogScreenRed(5, "PlayDefaultIdle");
+	IsIdleActionCouldPlay = false;
+	MainCharacter->GetWorldTimerManager().ClearTimer(IdleTimerHandle);
+}
+
+void UCloneAnimInstance::PlayIdleAction()
+{
+	LogScreenRed(5, "PlayIdleAction");
+	IsIdleActionCouldPlay = true;
+	MainCharacter->GetWorldTimerManager().SetTimer(IdleTimerHandle,this,&UCloneAnimInstance::PlayDefaultIdle,2.0f,true);
 }

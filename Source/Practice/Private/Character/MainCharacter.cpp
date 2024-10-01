@@ -103,15 +103,10 @@ void AMainCharacter::SwitchPerspective()
 	}
 }
 
-bool AMainCharacter::IsRun()
-{
-	return IsRunning;
-}
-
 void AMainCharacter::FirstPerson()
 {
 	SpringArmComponent->TargetArmLength = 0.0f;
-	SpringArmComponent->SetRelativeLocation(FVector(20.0f,0.0f,20.0f));
+	SpringArmComponent->SetRelativeLocation(FVector(30.0f,0.0f,20.0f));
 	bUseControllerRotationYaw = true;
     bUseControllerRotationRoll = false;
     bUseControllerRotationPitch = false;
@@ -265,10 +260,10 @@ void AMainCharacter::Jump()
 {
 	bool IsFalling = GetCharacterMovement()->IsFalling();
 	GetWorldTimerManager().ClearTimer(IdleActionTimerHandle);
-	if(!IsFalling)
+	/*if(!IsFalling)
 	{
 		PlayAnim(JumpAnim);
-	}
+	}*/
 	Super::Jump();
 }
 
@@ -280,13 +275,11 @@ void AMainCharacter::StopJumping()
 void AMainCharacter::Run()
 {
 	GetCharacterMovement()->MaxWalkSpeed = GetCharacterMovement()->MaxWalkSpeed * 2;
-	IsRunning = true;
 }
 
 void AMainCharacter::StopRunning()
 {
 	GetCharacterMovement()->MaxWalkSpeed = GetCharacterMovement()->MaxWalkSpeed / 2;
-	IsRunning = false;
 }
 
 // Called every frame
