@@ -9,6 +9,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Engine/SkinnedAssetCommon.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Tools/Log.h"
 #include "Tools/Static.h"
@@ -36,6 +37,18 @@ void AMainCharacter::BeginPlay()
 	if(UClass* AnimationClass = LoadObject<UClass>(nullptr,*AnimInstance))
 	{
 		GetMesh()->SetAnimInstanceClass(AnimationClass);
+	}
+	auto &Materials = SkeletalMeshBody->GetMaterials();
+	UMaterialInstanceDynamic* MaterialInstanceDynamic = UMaterialInstanceDynamic::Create(Materials[1].MaterialInterface,nullptr);
+	if(MaterialInstanceDynamic)
+	{
+		FHashedMaterialParameterInfo HashedMaterialParameter("UChannel");
+		float OutUValue;
+		float OutVValue;
+		FHashedMaterialParameterInfo HashedMaterialParameter1("VChannel");
+		MaterialInstanceDynamic->GetScalarParameterValue(HashedMaterialParameter,OutUValue);
+		MaterialInstanceDynamic->GetScalarParameterValue(HashedMaterialParameter1,OutVValue);
+		LogError("MaterialInstanceDynamic:%f %f %s",OutUValue,OutVValue,*MaterialInstanceDynamic->GetName());
 	}
 	//PlayAnim(Idle,true);
 }
@@ -275,11 +288,15 @@ void AMainCharacter::StopJumping()
 void AMainCharacter::Run()
 {
 	GetCharacterMovement()->MaxWalkSpeed = GetCharacterMovement()->MaxWalkSpeed * 2;
+	GetMesh()->SetScalarParameterValueOnMaterials("UChannel",1.0f);
+	GetMesh()->SetScalarParameterValueOnMaterials("UChannel",-1.0f);
 }
 
 void AMainCharacter::StopRunning()
 {
 	GetCharacterMovement()->MaxWalkSpeed = GetCharacterMovement()->MaxWalkSpeed / 2;
+	GetMesh()->SetScalarParameterValueOnMaterials("UChannel",0.0f);
+	GetMesh()->SetScalarParameterValueOnMaterials("UChannel",1.0f);
 }
 
 // Called every frame

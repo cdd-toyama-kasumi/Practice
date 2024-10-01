@@ -9,3 +9,4 @@ inline FString IdleActionAnim2 = TEXT("AnimSequence'/Game/Mine/Airi/AnimSequence
 inline FString AnimInstance = TEXT("Class'/Game/Mine/Airi/BP_Anim_Airi.BP_Anim_Airi_C'");
 inline FString Halo = TEXT("StaticMesh'/Game/Mine/Airi/StaticMesh/Airi_Halo.Airi_Halo'");
 inline FString SkeletalMesh = TEXT("SkeletalMesh'/Game/Mine/Airi/Airi_Character.Airi_Character'");
+inline FString EyeMouthMatIns = TEXT("MaterialInstanceConstant'/Game/Mine/Airi/Material/Airi_EyeMouth_Mat_Ins.Airi_EyeMouth_Mat_Ins'");

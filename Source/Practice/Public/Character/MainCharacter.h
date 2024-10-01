@@ -25,7 +25,6 @@ public:
 	//第一第三人称切换
 	void SwitchPerspective();
 
-	bool IsRun();
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -63,7 +62,11 @@ protected:
 	void FirstPerson();
 	
 	void ThirdPerson();
+
+	UPROPERTY(Category=Camera, EditAnywhere)
+	bool bUseFirstPerson = false;
 	
+	//蓝图中实现 未使用
 	void PlayAnim(FString Value, bool Loop = false);
 
 	void SwitchAnim();
@@ -76,17 +79,11 @@ protected:
 	
 	FTimerHandle IdleActionTimerHandle;
 	FTimerHandle IdleTimerHandle;
-	UPROPERTY(Category=Camera, EditAnywhere)
-	bool bUseFirstPerson = false;
-	
-	UPROPERTY(Category=Input, VisibleAnywhere)
-	bool IsMove = false;
 
 	bool IsIdleCouldPlay = true;
 	bool IsWalkCouldPlay = true;
 	bool IsJumpCouldPlay = true;
 	bool IsIdleActionCouldPlay = false;
-	bool IsRunning = false;;
 	
 private:
 	UPROPERTY(Category=Character, EditDefaultsOnly)
@@ -127,5 +124,4 @@ private:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Anime, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UAnimSequence> AnimSequence;
-	
 };
