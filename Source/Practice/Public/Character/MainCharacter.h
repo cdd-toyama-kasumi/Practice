@@ -25,6 +25,7 @@ public:
 	//第一第三人称切换
 	void SwitchPerspective();
 
+	void SetMouthType(const FString& MouthType);
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -84,7 +85,15 @@ protected:
 	bool IsWalkCouldPlay = true;
 	bool IsJumpCouldPlay = true;
 	bool IsIdleActionCouldPlay = false;
+
+	UPROPERTY(EditDefaultsOnly,Category="Material")
+	FString DefaultMouthType = "Mouth_0_4";
 	
+	UPROPERTY(EditDefaultsOnly,Category="Material")
+	FString RunMouthType = "Mouth_1_2";
+	
+	UPROPERTY(EditDefaultsOnly,Category="Material")
+	FString JumpMouthType = "Mouth_0_3";
 private:
 	UPROPERTY(Category=Character, EditDefaultsOnly)
 	TObjectPtr<UStaticMeshComponent> MeshComponentHalo;

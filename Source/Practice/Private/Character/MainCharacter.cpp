@@ -38,18 +38,6 @@ void AMainCharacter::BeginPlay()
 	{
 		GetMesh()->SetAnimInstanceClass(AnimationClass);
 	}
-	auto &Materials = SkeletalMeshBody->GetMaterials();
-	UMaterialInstanceDynamic* MaterialInstanceDynamic = UMaterialInstanceDynamic::Create(Materials[1].MaterialInterface,nullptr);
-	if(MaterialInstanceDynamic)
-	{
-		FHashedMaterialParameterInfo HashedMaterialParameter("UChannel");
-		float OutUValue;
-		float OutVValue;
-		FHashedMaterialParameterInfo HashedMaterialParameter1("VChannel");
-		MaterialInstanceDynamic->GetScalarParameterValue(HashedMaterialParameter,OutUValue);
-		MaterialInstanceDynamic->GetScalarParameterValue(HashedMaterialParameter1,OutVValue);
-		LogError("MaterialInstanceDynamic:%f %f %s",OutUValue,OutVValue,*MaterialInstanceDynamic->GetName());
-	}
 	//PlayAnim(Idle,true);
 }
 
@@ -100,7 +88,6 @@ void AMainCharacter::GenerateMainCamera()
 	SpringArmComponent->bUsePawnControlRotation = true;
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComponent"));
 	CameraComponent->SetupAttachment(SpringArmComponent, TEXT("SpringEndpoint"));
-	ThirdPerson();
 }
 
 void AMainCharacter::SwitchPerspective()
@@ -113,6 +100,15 @@ void AMainCharacter::SwitchPerspective()
 	else
 	{
 		ThirdPerson();
+	}
+}
+
+void AMainCharacter::SetMouthType(const FString& MouthType)
+{
+	if(auto* Result = MouthTypeMap.Find(MouthType))
+	{
+		GetMesh()->SetScalarParameterValueOnMaterials(MouthInsParamUChannel,Result->X);
+		GetMesh()->SetScalarParameterValueOnMaterials(MouthInsParamVChannel,Result->Y);
 	}
 }
 
@@ -277,26 +273,26 @@ void AMainCharacter::Jump()
 	{
 		PlayAnim(JumpAnim);
 	}*/
+	SetMouthType(JumpMouthType);
 	Super::Jump();
 }
 
 void AMainCharacter::StopJumping()
 {
+	SetMouthType(DefaultMouthType);
 	Super::StopJumping();
 }
 
 void AMainCharacter::Run()
 {
 	GetCharacterMovement()->MaxWalkSpeed = GetCharacterMovement()->MaxWalkSpeed * 2;
-	GetMesh()->SetScalarParameterValueOnMaterials("UChannel",1.0f);
-	GetMesh()->SetScalarParameterValueOnMaterials("UChannel",-1.0f);
+	SetMouthType(RunMouthType);
 }
 
 void AMainCharacter::StopRunning()
 {
 	GetCharacterMovement()->MaxWalkSpeed = GetCharacterMovement()->MaxWalkSpeed / 2;
-	GetMesh()->SetScalarParameterValueOnMaterials("UChannel",0.0f);
-	GetMesh()->SetScalarParameterValueOnMaterials("UChannel",1.0f);
+	SetMouthType(DefaultMouthType);
 }
 
 // Called every frame

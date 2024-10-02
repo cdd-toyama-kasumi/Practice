@@ -56,6 +56,7 @@ void UCloneAnimInstance::PlayDefaultIdle()
 	LogScreenRed(5, "PlayDefaultIdle");
 	IsIdleActionCouldPlay = false;
 	MainCharacter->GetWorldTimerManager().ClearTimer(IdleTimerHandle);
+	MainCharacter->SetMouthType("Mouth_0_4");
 }
 
 void UCloneAnimInstance::PlayIdleAction()
@@ -63,4 +64,5 @@ void UCloneAnimInstance::PlayIdleAction()
 	LogScreenRed(5, "PlayIdleAction");
 	IsIdleActionCouldPlay = true;
 	MainCharacter->GetWorldTimerManager().SetTimer(IdleTimerHandle,this,&UCloneAnimInstance::PlayDefaultIdle,2.0f,true);
+	MainCharacter->SetMouthType("Mouth_1_4");
 }
