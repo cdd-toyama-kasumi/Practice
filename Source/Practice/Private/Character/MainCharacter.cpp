@@ -9,6 +9,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Build/BuildSystem.h"
 #include "Engine/SkinnedAssetCommon.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Tools/Log.h"
@@ -26,6 +27,7 @@ AMainCharacter::AMainCharacter()
 void AMainCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	BuildSystem->SetPlayer(this);
 	if(bUseFirstPerson)
 	{
 		FirstPerson();
@@ -53,6 +55,8 @@ void AMainCharacter::Construct()
 
 	GetCharacterMovement()->MaxWalkSpeed = 120.0f;
 	GetCharacterMovement()->MaxWalkSpeedCrouched = 50.0f;
+
+	BuildSystem = CreateDefaultSubobject<UBuildSystem>(TEXT("BuildSystem"));
 }
 
 void AMainCharacter::GenerateMainBody()
@@ -129,6 +133,39 @@ void AMainCharacter::ThirdPerson()
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationPitch = false;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
+}
+
+void AMainCharacter::Build()
+{
+	if(IsBuildMode == true)
+	{
+		BuildSystem->UnSetBuildItem();
+	}
+	else
+	{
+		BuildSystem->SetBuildItem();
+	}
+	IsBuildMode = !IsBuildMode;
+}
+
+void AMainCharacter::MouseLeftClick()
+{
+	if(IsBuildMode)
+	{
+		if(BuildSystem->Building())
+		{
+			IsBuildMode = false;
+		}
+	}
+}
+
+void AMainCharacter::MouseRightClick()
+{
+	if(IsBuildMode)
+	{
+		IsBuildMode = false;
+		BuildSystem->UnSetBuildItem();
+	}
 }
 
 void AMainCharacter::Zoom(const FInputActionValue& Value)
@@ -323,8 +360,12 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AMainCharacter::Move);
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMainCharacter::Look);
+		EnhancedInputComponent->BindAction(BuildAction, ETriggerEvent::Started, this, &AMainCharacter::Build);
+		EnhancedInputComponent->BindAction(BuildingAction, ETriggerEvent::Triggered, this, &AMainCharacter::MouseLeftClick);
+		EnhancedInputComponent->BindAction(CancelAction, ETriggerEvent::Triggered, this, &AMainCharacter::MouseRightClick);
+		
 		EnhancedInputComponent->BindAction(ViewAction, ETriggerEvent::Started, this, &AMainCharacter::SwitchPerspective);
-
+		
 		EnhancedInputComponent->BindAction(ZoomAction, ETriggerEvent::Started, this, &AMainCharacter::Zoom);
 	}
 	else

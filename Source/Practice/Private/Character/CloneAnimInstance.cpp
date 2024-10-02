@@ -27,7 +27,7 @@ void UCloneAnimInstance::NativeInitializeAnimation()
 void UCloneAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
 	Super::NativeUpdateAnimation(DeltaSeconds);
-	if(!MainCharacter)
+	if(!MainCharacter || !CharacterMovementComponent)
 	{
 		return;
 	}

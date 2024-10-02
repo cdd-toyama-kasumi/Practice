@@ -1,20 +1,21 @@
 ﻿#pragma once
 
-inline FString Idle = TEXT("AnimSequence'/Game/Mine/Airi/AnimSequence/idle_Anim.idle_Anim'");
-inline FString Walk = TEXT("AnimSequence'/Game/Mine/Airi/AnimSequence/walk_Anim.walk_Anim'");
-inline FString JumpAnim = TEXT("AnimSequence'/Game/Mine/Airi/AnimSequence/airi_Jump.airi_Jump'");
-inline FString JumpLoopAnim = TEXT("AnimSequence'/Game/Mine/Airi/AnimSequence/action_Anim.action_Anim'");
-inline FString IdleActionAnim1 = TEXT("AnimSequence'/Game/Mine/Airi/AnimSequence/idleAction_Anim1.idleAction_Anim1'");
-inline FString IdleActionAnim2 = TEXT("AnimSequence'/Game/Mine/Airi/AnimSequence/idleAction_Anim2.idleAction_Anim2'");
-inline FString AnimInstance = TEXT("Class'/Game/Mine/Airi/BP_Anim_Airi.BP_Anim_Airi_C'");
-inline FString Halo = TEXT("StaticMesh'/Game/Mine/Airi/StaticMesh/Airi_Halo.Airi_Halo'");
-inline FString SkeletalMesh = TEXT("SkeletalMesh'/Game/Mine/Airi/Airi_Character.Airi_Character'");
-inline FString EyeMouthMatIns = TEXT("MaterialInstanceConstant'/Game/Mine/Airi/Material/Airi_EyeMouth_Mat_Ins.Airi_EyeMouth_Mat_Ins'");
+inline FString Idle = TEXT("AnimSequence'/Game/Mine/Character/Airi/AnimSequence/idle_Anim.idle_Anim'");
+inline FString Walk = TEXT("AnimSequence'/Game/Mine/Character/Airi/AnimSequence/walk_Anim.walk_Anim'");
+inline FString JumpAnim = TEXT("AnimSequence'/Game/Mine/Character/Airi/AnimSequence/airi_Jump.airi_Jump'");
+inline FString JumpLoopAnim = TEXT("AnimSequence'/Game/Mine/Character/Airi/AnimSequence/action_Anim.action_Anim'");
+inline FString IdleActionAnim1 = TEXT("AnimSequence'/Game/Mine/Character/Airi/AnimSequence/idleAction_Anim1.idleAction_Anim1'");
+inline FString IdleActionAnim2 = TEXT("AnimSequence'/Game/Mine/Character/Airi/AnimSequence/idleAction_Anim2.idleAction_Anim2'");
+inline FString AnimInstance = TEXT("Class'/Game/Mine/Character/Airi/BP_Anim_Airi.BP_Anim_Airi_C'");
+inline FString Halo = TEXT("StaticMesh'/Game/Mine/Character/Airi/StaticMesh/Airi_Halo.Airi_Halo'");
+inline FString SkeletalMesh = TEXT("SkeletalMesh'/Game/Mine/Character/Airi/Airi_Character.Airi_Character'");
+inline FString EyeMouthMatIns = TEXT("MaterialInstanceConstant'/Game/Mine/Character/Airi/Material/Airi_EyeMouth_Mat_Ins.Airi_EyeMouth_Mat_Ins'");
 
 
 inline FName MouthInsParamUChannel = "UChannel";
 inline FName MouthInsParamVChannel = "VChannel";
-
+inline FString FloorMat = "Material'/Game/Mine/Scene/Floor/floor_material.floor_material'";
+inline FString FloorMesh = TEXT("StaticMesh'/Game/Mine/Scene/Floor/floor.floor'");
 
 inline TMap<FString, FVector2D> MouthTypeMap =
 {

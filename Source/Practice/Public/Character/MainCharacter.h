@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "MainCharacter.generated.h"
 
+class UBuildSystem;
 class UCameraComponent;
 class USpringArmComponent;
 class UCharacterMovementComponent;
@@ -64,6 +65,10 @@ protected:
 	
 	void ThirdPerson();
 
+	void Build();
+	void MouseLeftClick();
+	void MouseRightClick();
+
 	UPROPERTY(Category=Camera, EditAnywhere)
 	bool bUseFirstPerson = false;
 	
@@ -85,7 +90,8 @@ protected:
 	bool IsWalkCouldPlay = true;
 	bool IsJumpCouldPlay = true;
 	bool IsIdleActionCouldPlay = false;
-
+	bool IsBuildMode = false;
+	
 	UPROPERTY(EditDefaultsOnly,Category="Material")
 	FString DefaultMouthType = "Mouth_0_4";
 	
@@ -130,7 +136,19 @@ private:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> ZoomAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> BuildAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> BuildingAction;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> CancelAction;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Anime, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UAnimSequence> AnimSequence;
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UBuildSystem> BuildSystem;
 };
