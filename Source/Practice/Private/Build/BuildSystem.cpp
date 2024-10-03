@@ -33,7 +33,7 @@ void UBuildSystem::BeginPlay()
 void UBuildSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
+	BlurAttach();
 	// ...
 }
 
@@ -46,7 +46,7 @@ void UBuildSystem::SetBuildItem()
 {
 	if(!BuildItem)
 	{
-		BuildItem = GetWorld()->SpawnActor<AFloor>(FVector(MainCharacter->GetActorLocation().X+100.f,MainCharacter->GetActorLocation().Y+100.f,MainCharacter->GetActorLocation().Z),FRotator::ZeroRotator);
+		BuildItem = GetWorld()->SpawnActor<AFloor>(FVector(0,0,-10000),FRotator::ZeroRotator);
 		Cast<AFloor>(BuildItem)->SetCollision(ECollisionEnabled::QueryOnly);
 	}
 }
@@ -60,6 +60,34 @@ void UBuildSystem::UnSetBuildItem()
 	}
 }
 
+void UBuildSystem::BlurAttach()
+{
+	if(BuildItem)
+	{
+		FRotator ViewRotation = MainCharacter->GetController()->GetControlRotation();
+		FVector MainLocation = MainCharacter->GetActorLocation();
+		float AngleControllerPlayer = 90.0f - (360.0f - ViewRotation.Pitch);
+		if(AngleControllerPlayer <= 0.0f)
+		{
+			AngleControllerPlayer = 89.0f;
+		}
+		BuildDistance = FMath::Tan(FMath::DegreesToRadians(AngleControllerPlayer)) * MainLocation.Z;
+		if(BuildDistance > 600.0f)
+		{
+			BuildDistance = 600.0f;
+		}
+		float X = BuildDistance * FMath::Cos(FMath::DegreesToRadians(ViewRotation.Yaw));
+		float Y = BuildDistance * FMath::Sin(FMath::DegreesToRadians(ViewRotation.Yaw));
+		BuildLocation = FVector(MainLocation.X,MainLocation.Y,MainLocation.Z-50.0f) + FVector(X,Y,0);
+		
+		FString Msg = FString::Printf(TEXT("Roll:%f Pitch:%f Yaw:%f Distance:%f X:%f, Y:%f"), ViewRotation.Roll, ViewRotation.Pitch, ViewRotation.Yaw,BuildDistance,BuildLocation.X,BuildLocation.Y);
+		LogScreen(1.0f,Msg);
+
+		Cast<AFloor>(BuildItem)->SetActorLocation(BuildLocation);
+		Cast<AFloor>(BuildItem)->SetActorRotation(FRotator(0,ViewRotation.Yaw,0));
+	}
+}
+
 bool UBuildSystem::Building()
 {
 	if(!BuildItem)
@@ -68,7 +96,7 @@ bool UBuildSystem::Building()
 	}
 	if(Cast<AFloor>(BuildItem)->IsBlock)
 	{
-		LogScreen(1.0f,"放置被阻挡");
+		LogScreen(1.0f,FString::Printf(TEXT("%ls:Building is blocked"), *BuildItem->GetName()));
 		return false;
 	}
 	

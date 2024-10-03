@@ -12,9 +12,10 @@ AFloor::AFloor()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>("MeshComponent");
 	MeshComponent->SetStaticMesh(LoadObject<UStaticMesh>(nullptr, *FloorMesh));
-	
+	SetRootComponent(MeshComponent);
 	BoxComponent = CreateDefaultSubobject<UBoxComponent>("BoxComponent");
 	BoxComponent->SetupAttachment(MeshComponent);
 	BoxComponent->InitBoxExtent(FVector(SizeXY, SizeXY, SizeZ));
@@ -57,12 +58,14 @@ void AFloor::SetMaterial(FString Material)
 void AFloor::OnBeginOverLap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	LogScreen(2, "OnBeginOverLap" + OtherActor->GetName());
+	MeshComponent->SetVectorParameterValueOnMaterials("BaseColor",FVector(FLinearColor::Red.R,FLinearColor::Red.G,FLinearColor::Red.B));
 	IsBlock = true;
 }
 
 void AFloor::OnEndOverLap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	LogScreen(2, "OnEndOverLap" + OtherActor->GetName());
+	MeshComponent->SetVectorParameterValueOnMaterials("BaseColor",FVector(FLinearColor::Green.R,FLinearColor::Green.G,FLinearColor::Green.B));
 	IsBlock = false;
 }
 

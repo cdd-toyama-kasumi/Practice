@@ -44,5 +44,7 @@ public:
 
 	void UnSetBuildItem();
 
+	void BlurAttach();
+
 	bool Building();
 };

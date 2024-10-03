@@ -128,7 +128,7 @@ void AMainCharacter::FirstPerson()
 void AMainCharacter::ThirdPerson()
 {
 	SpringArmComponent->TargetArmLength = 300.0f;
-	SpringArmComponent->SetRelativeLocation(FVector(0.0f,0.0f,0.0f));
+	SpringArmComponent->SetRelativeLocation(FVector(0.0f,0.0f,30.0f));
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationPitch = false;
