@@ -47,6 +47,7 @@ void UBuildSystem::SetBuildItem()
 	if(!BuildItem)
 	{
 		BuildItem = GetWorld()->SpawnActor<AFloor>(FVector(0,0,-10000),FRotator::ZeroRotator);
+		Cast<AFloor>(BuildItem)->SetBlur(0.1,FColor::Green);
 		Cast<AFloor>(BuildItem)->SetCollision(ECollisionEnabled::QueryOnly);
 	}
 }
@@ -71,6 +72,15 @@ void UBuildSystem::BlurAttach()
 		{
 			AngleControllerPlayer = 89.0f;
 		}
+		/*
+		 *camera
+		 *       ↘-------------------------------
+		 *     z p ↘  AngleControllerPlayer
+		 *       p θ ↘
+		 *       p     ↘
+		 *       p      ↘
+		 *       --------- distance = z*tanθ
+		 */
 		BuildDistance = FMath::Tan(FMath::DegreesToRadians(AngleControllerPlayer)) * MainLocation.Z;
 		if(BuildDistance > 600.0f)
 		{
@@ -85,6 +95,7 @@ void UBuildSystem::BlurAttach()
 
 		Cast<AFloor>(BuildItem)->SetActorLocation(BuildLocation);
 		Cast<AFloor>(BuildItem)->SetActorRotation(FRotator(0,ViewRotation.Yaw,0));
+
 	}
 }
 
@@ -102,7 +113,8 @@ bool UBuildSystem::Building()
 	
 	Cast<AFloor>(BuildItem)->MeshComponent->SetMobility(EComponentMobility::Stationary);
 	Cast<AFloor>(BuildItem)->SetCollision(ECollisionEnabled::QueryAndPhysics);
-	Cast<AFloor>(BuildItem)->SetMaterial(FloorMat);
+	Cast<AFloor>(BuildItem)->SetBlur(0.0,FColor::Black);
+	//Cast<AFloor>(BuildItem)->SetMaterial(FloorMat);
 	BuildItem = nullptr;
 	return true;
 }

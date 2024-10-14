@@ -49,6 +49,12 @@ void AFloor::SetCollision(ECollisionEnabled::Type Type)
 	}
 }
 
+void AFloor::SetBlur(float Emissive,FColor Color)
+{
+	MeshComponent->SetScalarParameterValueOnMaterials("emissive",Emissive);
+	MeshComponent->SetVectorParameterValueOnMaterials("blur",FVector(Color.R,Color.G,Color.B));
+}
+
 void AFloor::SetMaterial(FString Material)
 {
 	UMaterialInterface* MaterialInterface = LoadObject<UMaterialInterface>(nullptr, *Material);
@@ -58,14 +64,20 @@ void AFloor::SetMaterial(FString Material)
 void AFloor::OnBeginOverLap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	LogScreen(2, "OnBeginOverLap" + OtherActor->GetName());
-	MeshComponent->SetVectorParameterValueOnMaterials("BaseColor",FVector(FLinearColor::Red.R,FLinearColor::Red.G,FLinearColor::Red.B));
+	if(MeshComponent->Mobility == EComponentMobility::Type::Movable)
+	{
+		SetBlur(0.1,FColor::Red);
+	}
 	IsBlock = true;
 }
 
 void AFloor::OnEndOverLap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	LogScreen(2, "OnEndOverLap" + OtherActor->GetName());
-	MeshComponent->SetVectorParameterValueOnMaterials("BaseColor",FVector(FLinearColor::Green.R,FLinearColor::Green.G,FLinearColor::Green.B));
+	if(MeshComponent->Mobility == EComponentMobility::Type::Movable)
+	{
+		SetBlur(0.1,FColor::Green);
+	}
 	IsBlock = false;
 }
 

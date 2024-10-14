@@ -26,6 +26,9 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	void SetCollision(ECollisionEnabled::Type Type);
 
+	UFUNCTION()
+	void SetBlur(float Emissive,FColor Color);
+	
 	UPROPERTY(EditDefaultsOnly, Category="Mesh")
 	TObjectPtr<UStaticMeshComponent> MeshComponent;
 
