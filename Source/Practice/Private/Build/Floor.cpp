@@ -18,7 +18,7 @@ AFloor::AFloor()
 	SetRootComponent(MeshComponent);
 	BoxComponent = CreateDefaultSubobject<UBoxComponent>("BoxComponent");
 	BoxComponent->SetupAttachment(MeshComponent);
-	BoxComponent->InitBoxExtent(FVector(SizeXY, SizeXY, SizeZ));
+	BoxComponent->InitBoxExtent(FVector(HalfSizeXY, HalfSizeXY, HalfSizeZ*2));
 }
 
 // Called when the game starts or when spawned
@@ -64,7 +64,8 @@ void AFloor::SetMaterial(FString Material)
 void AFloor::OnBeginOverLap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	LogScreen(2, "OnBeginOverLap" + OtherActor->GetName());
-	if(MeshComponent->Mobility == EComponentMobility::Type::Movable)
+	BlockActorName = OtherActor->GetName();
+	if(MeshComponent->Mobility == EComponentMobility::Type::Movable && !ForceBuild)
 	{
 		SetBlur(0.1,FColor::Red);
 	}
@@ -74,6 +75,7 @@ void AFloor::OnBeginOverLap(UPrimitiveComponent* OverlappedComponent, AActor* Ot
 void AFloor::OnEndOverLap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	LogScreen(2, "OnEndOverLap" + OtherActor->GetName());
+	BlockActorName = "";
 	if(MeshComponent->Mobility == EComponentMobility::Type::Movable)
 	{
 		SetBlur(0.1,FColor::Green);

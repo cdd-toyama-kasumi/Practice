@@ -91,6 +91,7 @@ protected:
 	bool IsJumpCouldPlay = true;
 	bool IsIdleActionCouldPlay = false;
 	bool IsBuildMode = false;
+	bool IsMoving = false;
 	
 	UPROPERTY(EditDefaultsOnly,Category="Material")
 	FString DefaultMouthType = "Mouth_0_4";

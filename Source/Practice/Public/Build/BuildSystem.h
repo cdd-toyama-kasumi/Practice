@@ -6,6 +6,35 @@
 #include "Components/ActorComponent.h"
 #include "BuildSystem.generated.h"
 
+USTRUCT()
+struct FBuildCache
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditInstanceOnly,Category="base")
+	FVector Location;
+	
+	UPROPERTY(EditInstanceOnly,Category="base")
+	FRotator Rotation;
+
+	UPROPERTY(EditInstanceOnly,Category="base")
+	FString Type;
+	
+	UPROPERTY(EditInstanceOnly,Category="base")
+	bool Up = false;
+
+	UPROPERTY(EditInstanceOnly,Category="base")
+	bool Down = false;
+
+	UPROPERTY(EditInstanceOnly,Category="base")
+	bool Left = false;
+
+	UPROPERTY(EditInstanceOnly,Category="base")
+	bool Right = false;
+
+	UPROPERTY(EditInstanceOnly,Category="base")
+	TObjectPtr<UObject> Building = nullptr;
+};
 
 class AMainCharacter;
 
@@ -35,8 +64,23 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category="Base")
 	FVector BuildLocation;
 
+	UPROPERTY(EditDefaultsOnly, Category="Base")
+	float BuildRotation;
+	
 	UPROPERTY(EditInstanceOnly, Category="Base")
 	TObjectPtr<UObject> BuildItem = nullptr;
+
+	UPROPERTY(EditInstanceOnly, Category="Base")
+	TArray<FBuildCache> SavingCache;
+
+	UPROPERTY(EditDefaultsOnly, Category="Base")
+	bool ForceBuild = true;
+	
+	UPROPERTY(VisibleAnywhere, Category="Base")
+	int32 Index = 0;
+
+	UPROPERTY(VisibleAnywhere, Category="Base")
+	FString WhichSide;
 	
 	void SetPlayer(AMainCharacter* Player);
 

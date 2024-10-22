@@ -35,13 +35,18 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Collision")
 	TObjectPtr<UBoxComponent> BoxComponent;
 
+	UPROPERTY(VisibleAnywhere, Category="Collision")
+	FString BlockActorName;
+	
 	UPROPERTY(EditDefaultsOnly, Category="BaseParam")
-	float SizeXY = 100.0f;
+	float HalfSizeXY = 100.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category="BaseParam")
-	float SizeZ = 3.0f;
+	float HalfSizeZ = 3.f;
 
 	bool IsBlock = false;
+
+	bool ForceBuild = false;
 	
 	void SetMaterial(FString Material);
 	
