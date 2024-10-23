@@ -1,5 +1,13 @@
 ﻿#pragma once
 
+enum class Direction
+{
+	Up,
+	Down,
+	Left,
+	Right
+};
+
 inline FString Idle = TEXT("AnimSequence'/Game/Mine/Character/Airi/AnimSequence/idle_Anim.idle_Anim'");
 inline FString Walk = TEXT("AnimSequence'/Game/Mine/Character/Airi/AnimSequence/walk_Anim.walk_Anim'");
 inline FString JumpAnim = TEXT("AnimSequence'/Game/Mine/Character/Airi/AnimSequence/airi_Jump.airi_Jump'");

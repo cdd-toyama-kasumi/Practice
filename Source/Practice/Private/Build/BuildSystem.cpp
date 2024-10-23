@@ -143,7 +143,7 @@ void UBuildSystem::BlurAttach()
 					FString DistanceMsg = FString::Printf(TEXT("DisRight:%f DisToLeft:%f DisUp:%f DisDown:%f RightUpX:%f RightUpY:%f LeftUpX:%f LeftUpY:%f LeftDownX:%f LeftDownY:%f RightDownX:%f RightDownY:%f\nRightX:%f RightY:%f UpX:%f UpY:%f LeftX:%f LeftY:%f DownX:%f DownY:%f"), DistanceToRight,DistanceToLeft,DistanceToUp,DistanceToDown,RightUpX,RightUpY,
 					LeftUpX,LeftUpY,LeftDownX,LeftDownY,RightDownX,RightDownY,RightSideCenter.X,RightSideCenter.Y,
 										UpSideCenter.X,UpSideCenter.Y,LeftSideCenter.X,LeftSideCenter.Y,DownSideCenter.X,DownSideCenter.Y);
-					LogScreen(1.0f,DistanceMsg);
+					//LogScreen(1.0f,DistanceMsg);
 					
 					float MinDis = FMath::Min(DistanceToRight,FMath::Min(DistanceToLeft,FMath::Min(DistanceToUp,DistanceToDown)));
 					
@@ -179,7 +179,7 @@ void UBuildSystem::BlurAttach()
 						ForceBuild = false;
 					}
 					FString LocationMsg = FString::Printf(TEXT("X:%f Y:%f X:%f Y:%f WhichSide:%s"), BlockActorLocation.X,BlockActorLocation.Y,BuildLocation.X,BuildLocation.Y,*WhichSide);
-                    LogScreen(1.0f,LocationMsg);
+                    //LogScreen(1.0f,LocationMsg);
 				}
 			}
 		}
