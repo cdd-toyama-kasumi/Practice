@@ -58,13 +58,16 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Collision")
 	TObjectPtr<UBoxComponent> DownSideBoxComponent;
-	
+
+	//吸附对象名称
 	UPROPERTY(VisibleAnywhere, Category="Collision")
 	FString BlockActorName;
 
+	//吸附边名称
 	UPROPERTY(VisibleAnywhere, Category="Collision")
 	FString BlockActorSide;
 
+	//吸附的物体信息
 	UPROPERTY(EditInstanceOnly, Category="Collision")
 	TArray<FAttachActor> AttachActorCache;
 	

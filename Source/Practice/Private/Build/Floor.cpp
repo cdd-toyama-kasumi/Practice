@@ -29,26 +29,26 @@ AFloor::AFloor()
 	
 	BoxComponent = CreateDefaultSubobject<UBoxComponent>("BoxComponent");
 	BoxComponent->SetupAttachment(MeshComponent);
-	BoxComponent->InitBoxExtent(FVector(HalfSizeXY, HalfSizeXY, HalfSizeZ*2));
+	BoxComponent->InitBoxExtent(FVector(HalfSizeXY, HalfSizeXY, HalfSizeZ));
 
 	RightSideBoxComponent = CreateDefaultSubobject<UBoxComponent>("RightBox");
 	RightSideBoxComponent->SetupAttachment(MeshComponent);
-	RightSideBoxComponent->InitBoxExtent(FVector(10,HalfSizeXY/2, HalfSizeZ));
+	RightSideBoxComponent->InitBoxExtent(FVector(10,HalfSizeXY/2, HalfSizeZ*2));
 	RightSideBoxComponent->SetRelativeLocation(FVector(HalfSizeXY,0,0));
 
 	LeftSideBoxComponent = CreateDefaultSubobject<UBoxComponent>("LeftBox");
 	LeftSideBoxComponent->SetupAttachment(MeshComponent);
-	LeftSideBoxComponent->InitBoxExtent(FVector(10,HalfSizeXY/2, HalfSizeZ));
+	LeftSideBoxComponent->InitBoxExtent(FVector(10,HalfSizeXY/2, HalfSizeZ*2));
 	LeftSideBoxComponent->SetRelativeLocation(FVector(-HalfSizeXY,0,0));
 	
 	UpSideBoxComponent = CreateDefaultSubobject<UBoxComponent>("UpBox");
 	UpSideBoxComponent->SetupAttachment(MeshComponent);
-	UpSideBoxComponent->InitBoxExtent(FVector(HalfSizeXY/2,10, HalfSizeZ));
+	UpSideBoxComponent->InitBoxExtent(FVector(HalfSizeXY/2,10, HalfSizeZ*2));
 	UpSideBoxComponent->SetRelativeLocation(FVector(0,-HalfSizeXY,0));
 	
 	DownSideBoxComponent = CreateDefaultSubobject<UBoxComponent>("DownBox");
 	DownSideBoxComponent->SetupAttachment(MeshComponent);
-	DownSideBoxComponent->InitBoxExtent(FVector(HalfSizeXY/2,10, HalfSizeZ));
+	DownSideBoxComponent->InitBoxExtent(FVector(HalfSizeXY/2,10, HalfSizeZ*2));
 	DownSideBoxComponent->SetRelativeLocation(FVector(0,HalfSizeXY,0));
 
 }
@@ -153,7 +153,7 @@ void AFloor::LeftSideBeginOverLap(UPrimitiveComponent* OverlappedComponent, AAct
 	if(Save(OtherActor->GetName(),OtherComp->GetName()))
 	{
 		LogScreen(10,"Left Begin");
-		ArraySide[static_cast<int32>(Direction::Right)] = true;
+		ArraySide[static_cast<int32>(Direction::Left)] = true;
 	}
 }
 
@@ -163,7 +163,7 @@ void AFloor::LeftSideEndOverLap(UPrimitiveComponent* OverlappedComponent, AActor
 	if(Remove(OtherActor->GetName(),OtherComp->GetName()))
 	{
 		LogScreen(10,"Left End");
-		ArraySide[static_cast<int32>(Direction::Right)] = false;
+		ArraySide[static_cast<int32>(Direction::Left)] = false;
 	}
 }
 
@@ -173,7 +173,7 @@ void AFloor::UpSideBeginOverLap(UPrimitiveComponent* OverlappedComponent, AActor
 	if(Save(OtherActor->GetName(),OtherComp->GetName()))
 	{
 		LogScreen(10,"Up Begin");
-		ArraySide[static_cast<int32>(Direction::Right)] = true;
+		ArraySide[static_cast<int32>(Direction::Up)] = true;
 	}
 }
 
@@ -183,7 +183,7 @@ void AFloor::UpSideEndOverLap(UPrimitiveComponent* OverlappedComponent, AActor* 
 	if(Remove(OtherActor->GetName(),OtherComp->GetName()))
 	{
 		LogScreen(10,"Up End");
-		ArraySide[static_cast<int32>(Direction::Right)] = false;
+		ArraySide[static_cast<int32>(Direction::Up)] = false;
 	}
 }
 
@@ -193,7 +193,7 @@ void AFloor::DownSideBeginOverLap(UPrimitiveComponent* OverlappedComponent, AAct
 	if(Save(OtherActor->GetName(),OtherComp->GetName()))
 	{
 		LogScreen(10,"Down Begin");
-		ArraySide[static_cast<int32>(Direction::Right)] = true;
+		ArraySide[static_cast<int32>(Direction::Down)] = true;
 	}
 }
 
@@ -203,7 +203,7 @@ void AFloor::DownSideEndOverLap(UPrimitiveComponent* OverlappedComponent, AActor
 	if(Remove(OtherActor->GetName(),OtherComp->GetName()))
 	{
 		LogScreen(10,"Down End");
-		ArraySide[static_cast<int32>(Direction::Right)] = false;
+		ArraySide[static_cast<int32>(Direction::Down)] = false;
 	}
 }
 
