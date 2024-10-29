@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BuildBase.h"
 #include "GameFramework/Actor.h"
 #include "Floor.generated.h"
 
@@ -21,7 +22,7 @@ struct FAttachActor
 };
 
 UCLASS()
-class PRACTICE_API AFloor : public AActor
+class PRACTICE_API AFloor : public ABuildBase
 {
 	GENERATED_BODY()
 	
