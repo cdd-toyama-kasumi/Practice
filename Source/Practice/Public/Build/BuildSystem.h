@@ -3,8 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "InputActionValue.h"
 #include "Components/ActorComponent.h"
 #include "BuildSystem.generated.h"
+
+class AMainCharacter;
+class ABuildBase;
 
 USTRUCT()
 struct FBuildCache
@@ -36,7 +40,27 @@ struct FBuildCache
 	TObjectPtr<UObject> Building = nullptr;
 };
 
-class AMainCharacter;
+enum EBuildingType
+{
+	Floor,
+	Wall
+};
+
+
+class FBuildType
+{
+public:
+
+	void Pre();
+	void Next();
+	
+	EBuildingType GetType();
+
+	bool operator==(const EBuildingType& Type);
+	
+	TArray<EBuildingType> BuildingTypeArray{Floor, Wall};
+	int32 CurIndex = 0;
+};
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PRACTICE_API UBuildSystem : public UActorComponent
@@ -55,9 +79,25 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+public:
+	void SetPlayer(AMainCharacter* Player);
+
+	void SetBuildItem();
+
+	void UnSetBuildItem();
+
+	void BlurAttach();
+
+	bool Building();
+
+	void SwitchType(const FInputActionValue& Value);
+public:
 	UPROPERTY(EditDefaultsOnly, Category="Base")
 	TObjectPtr<AMainCharacter> MainCharacter;
 
+	UPROPERTY(EditInstanceOnly, Category="Base")
+	TObjectPtr<ABuildBase> BuildItem = nullptr;
+	
 	UPROPERTY(EditDefaultsOnly, Category="Base")
 	float BuildDistance = 300.0f;
 
@@ -67,9 +107,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category="Base")
 	float BuildRotation;
 	
-	UPROPERTY(EditInstanceOnly, Category="Base")
-	TObjectPtr<UObject> BuildItem = nullptr;
-
 	UPROPERTY(EditInstanceOnly, Category="Base")
 	TArray<FBuildCache> SavingCache;
 
@@ -81,14 +118,6 @@ public:
 
 	UPROPERTY(VisibleAnywhere, Category="Base")
 	FString WhichSide;
-	
-	void SetPlayer(AMainCharacter* Player);
 
-	void SetBuildItem();
-
-	void UnSetBuildItem();
-
-	void BlurAttach();
-
-	bool Building();
+	FBuildType CurType;
 };

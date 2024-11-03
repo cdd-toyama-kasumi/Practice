@@ -4,10 +4,46 @@
 #include "Build/BuildSystem.h"
 
 #include "IDetailTreeNode.h"
+#include "InputActionValue.h"
 #include "Build/Floor.h"
+#include "Build/Wall.h"
 #include "Character/MainCharacter.h"
 #include "Tools/Log.h"
 #include "Tools/Static.h"
+
+void FBuildType::Pre()
+{
+	if(CurIndex != 0)
+	{
+		--CurIndex;
+	}
+	else
+	{
+		CurIndex = BuildingTypeArray.Num()-1;
+	}
+}
+
+void FBuildType::Next()
+{
+	if(CurIndex != BuildingTypeArray.Num()-1)
+	{
+		++CurIndex;
+	}
+	else
+	{
+		CurIndex = 0;
+	}
+}
+
+EBuildingType FBuildType::GetType()
+{
+	return BuildingTypeArray[CurIndex];
+}
+
+bool FBuildType::operator==(const EBuildingType& Type)
+{
+	return BuildingTypeArray[CurIndex] == Type;
+}
 
 // Sets default values for this component's properties
 UBuildSystem::UBuildSystem()
@@ -45,19 +81,28 @@ void UBuildSystem::SetPlayer(AMainCharacter* Player)
 
 void UBuildSystem::SetBuildItem()
 {
-	if(!BuildItem)
+	if(BuildItem)
+	{
+		UnSetBuildItem();
+	}
+
+	if(CurType == EBuildingType::Floor)
 	{
 		BuildItem = GetWorld()->SpawnActor<AFloor>(FVector(0,0,-10000),FRotator::ZeroRotator);
-		Cast<AFloor>(BuildItem)->SetBlur(0.1,FColor::Green);
-		Cast<AFloor>(BuildItem)->SetCollision(ECollisionEnabled::QueryOnly);
 	}
+	else if(CurType == EBuildingType::Wall)
+	{
+		BuildItem = GetWorld()->SpawnActor<AWall>(FVector(0,0,-10000),FRotator::ZeroRotator);
+	}
+	BuildItem->SetBlur(0.1,FColor::Green);
+	BuildItem->SetCollision(ECollisionEnabled::QueryOnly);
 }
 
 void UBuildSystem::UnSetBuildItem()
 {
 	if(BuildItem)
 	{
-		GetWorld()->DestroyActor(Cast<AFloor>(BuildItem));
+		GetWorld()->DestroyActor(BuildItem);
 		BuildItem = nullptr;
 	}
 }
@@ -92,12 +137,12 @@ void UBuildSystem::BlurAttach()
 		BuildLocation = FVector(MainLocation.X,MainLocation.Y,MainLocation.Z-50.0f) + FVector(X,Y,0);
 		BuildRotation = ViewRotation.Yaw;
 		
-		FString Msg = FString::Printf(TEXT("Roll:%f Pitch:%f Yaw:%f Distance:%f X:%f, Y:%f"), ViewRotation.Roll, ViewRotation.Pitch, ViewRotation.Yaw,BuildDistance,BuildLocation.X,BuildLocation.Y);
+		FString Msg = FString::Printf(TEXT("Roll:%f Pitch:%f Yaw:%f R:%f Distance:%f X:%f, Y:%f"), ViewRotation.Roll, ViewRotation.Pitch, ViewRotation.Yaw, BuildRotation, BuildDistance,BuildLocation.X,BuildLocation.Y);
 		//LogScreen(1.0f,Msg);
 
 		//检查是否有物体可以附着
-		FString BlockName = Cast<AFloor>(BuildItem)->BlockActorName;
-		if(Cast<AFloor>(BuildItem)->IsAttach)
+		FString BlockName = BuildItem->BlockActorName;
+		if(BuildItem->IsAttach)
 		{
 			FVector BlockActorLocation = FVector::DownVector;
 			FRotator BlockActorRotation = FRotator::ZeroRotator;
@@ -111,44 +156,14 @@ void UBuildSystem::BlurAttach()
 					break;
 				}
 			}
-			
-			if(BlockActorLocation != FVector::DownVector && (MainCharacter->GetVelocity() == FVector::ZeroVector))
-			{
-				float Side = Cast<AFloor>(BuildItem)->HalfSizeXY * 2;
-				FString AttachSide = Cast<AFloor>(BuildItem)-> BlockActorSide;
-				/*float CenterToVertex = Cast<AFloor>(BuildItem)->HalfSizeXY * FMath::Sqrt(2.0f);
-				//右上角坐标
-				float RightUpX = FMath::Cos(FMath::DegreesToRadians(BlockActorRotation.Yaw+315)) * CenterToVertex;
-				float RightUpY = FMath::Sin(FMath::DegreesToRadians(BlockActorRotation.Yaw+315)) * CenterToVertex;
-				//左上角坐标
-				float LeftUpX = FMath::Cos(FMath::DegreesToRadians(BlockActorRotation.Yaw+225)) * CenterToVertex;
-				float LeftUpY = FMath::Sin(FMath::DegreesToRadians(BlockActorRotation.Yaw+255)) * CenterToVertex;
-				//左下角坐标
-				float LeftDownX = FMath::Cos(FMath::DegreesToRadians(BlockActorRotation.Yaw+135)) * CenterToVertex;
-				float LeftDownY = FMath::Sin(FMath::DegreesToRadians(BlockActorRotation.Yaw+135)) * CenterToVertex;
-				//右下角坐标
-				float RightDownX = FMath::Cos(FMath::DegreesToRadians(BlockActorRotation.Yaw+45)) * CenterToVertex;
-				float RightDownY = FMath::Sin(FMath::DegreesToRadians(BlockActorRotation.Yaw+45)) * CenterToVertex;
-				
-				FVector RightSideCenter = BlockActorLocation + FVector((RightUpX + RightDownX)/2,(RightUpY + RightDownY)/2,0);
-				FVector LeftSideCenter = BlockActorLocation + FVector((LeftUpX + LeftDownX)/2,(LeftUpY + LeftDownY)/2,0);
-				FVector UpSideCenter = BlockActorLocation + FVector((RightUpX + LeftUpX)/2,(RightUpY + LeftUpY)/2,0);
-				FVector DownSideCenter = BlockActorLocation + FVector((RightDownX + LeftDownX)/2,(RightDownY + LeftDownY)/2,0);
-				
-				float DistanceToRight = FMath::Sqrt(FMath::Square(BuildLocation.X-RightSideCenter.X) + FMath::Square(BuildLocation.Y-RightSideCenter.Y));
-				float DistanceToLeft = FMath::Sqrt(FMath::Square(BuildLocation.X-LeftSideCenter.X) + FMath::Square(BuildLocation.Y-LeftSideCenter.Y));
-				float DistanceToUp = FMath::Sqrt(FMath::Square(BuildLocation.X-UpSideCenter.X) + FMath::Square(BuildLocation.Y-UpSideCenter.Y));
-				float DistanceToDown = FMath::Sqrt(FMath::Square(BuildLocation.X-DownSideCenter.X) + FMath::Square(BuildLocation.Y-DownSideCenter.Y));
 
-				FString DistanceMsg = FString::Printf(TEXT("DisRight:%f DisToLeft:%f DisUp:%f DisDown:%f RightUpX:%f RightUpY:%f LeftUpX:%f LeftUpY:%f LeftDownX:%f LeftDownY:%f RightDownX:%f RightDownY:%f\nRightX:%f RightY:%f UpX:%f UpY:%f LeftX:%f LeftY:%f DownX:%f DownY:%f"), DistanceToRight,DistanceToLeft,DistanceToUp,DistanceToDown,RightUpX,RightUpY,
-				LeftUpX,LeftUpY,LeftDownX,LeftDownY,RightDownX,RightDownY,RightSideCenter.X,RightSideCenter.Y,
-									UpSideCenter.X,UpSideCenter.Y,LeftSideCenter.X,LeftSideCenter.Y,DownSideCenter.X,DownSideCenter.Y);
-				//LogScreen(1.0f,DistanceMsg);
-				
-				float MinDis = FMath::Min(DistanceToRight,FMath::Min(DistanceToLeft,FMath::Min(DistanceToUp,DistanceToDown)));*/
-				
+			if(BlockActorLocation != FVector::DownVector && (MainCharacter->GetVelocity() == FVector::ZeroVector && FMath::Sqrt(FMath::Square(BuildLocation.X - BlockActorLocation.X) + FMath::Square(BuildLocation.Y - BlockActorLocation.Y)) < 200.0f))
+			{
+				float Side = BuildItem->HalfSizeX * 2;
+				FString AttachSide = BuildItem-> BlockActorSide;
+			
 				ForceBuild = true;
-				Cast<AFloor>(BuildItem)->ForceBuild = true;
+				BuildItem->ForceBuild = true;
 				if(AttachSide.Contains("Right") && !SavingCache[Index].Right)
 				{
 					BuildLocation.X = BlockActorLocation.X + FMath::Cos(FMath::DegreesToRadians(BlockActorRotation.Yaw)) * Side;
@@ -183,7 +198,7 @@ void UBuildSystem::BlurAttach()
 				}
 				else
 				{
-					Cast<AFloor>(BuildItem)->ForceBuild = false;
+					BuildItem->ForceBuild = false;
 					ForceBuild = false;
 				}
 				FString LocationMsg = FString::Printf(TEXT("X:%f Y:%f X:%f Y:%f WhichSide:%s"), BlockActorLocation.X,BlockActorLocation.Y,BuildLocation.X,BuildLocation.Y,*WhichSide);
@@ -191,8 +206,8 @@ void UBuildSystem::BlurAttach()
 			}
 		}
 		
-		Cast<AFloor>(BuildItem)->SetActorRotation(FRotator(0,BuildRotation,0));
-		Cast<AFloor>(BuildItem)->SetActorLocation(BuildLocation);
+		BuildItem->SetActorRotation(FRotator(0,BuildRotation,0));
+		BuildItem->SetActorLocation(BuildLocation);
 	}
 }
 
@@ -202,28 +217,28 @@ bool UBuildSystem::Building()
 	{
 		return false;
 	}
-	if(Cast<AFloor>(BuildItem)->IsBlock && !ForceBuild)
+	if(BuildItem->IsBlock && !ForceBuild)
 	{
 		LogScreen(1.0f,FString::Printf(TEXT("%ls:Building is blocked"), *BuildItem->GetName()));
 		return false;
 	}
 	
-	Cast<AFloor>(BuildItem)->MeshComponent->SetMobility(EComponentMobility::Stationary);
-	Cast<AFloor>(BuildItem)->SetCollision(ECollisionEnabled::QueryAndPhysics);
-	Cast<AFloor>(BuildItem)->SetBlur(0.0,FColor::Black);
-	Cast<AFloor>(BuildItem)->IsSet = true;
+	BuildItem->MeshComponent->SetMobility(EComponentMobility::Stationary);
+	BuildItem->SetCollision(ECollisionEnabled::QueryAndPhysics);
+	BuildItem->SetBlur(0.0,FColor::Black);
+	BuildItem->IsSet = true;
 
 	FBuildCache Cache;
 	Cache.Type = "floor";
 	Cache.Location = BuildLocation;
-	Cache.Rotation = Cast<AFloor>(BuildItem)->GetActorRotation();
+	Cache.Rotation = BuildItem->GetActorRotation();
 	Cache.Building = BuildItem;
 	
-	if(Cast<AFloor>(BuildItem)->IsAttach)
+	if(BuildItem->IsAttach)
 	{
 		for(int32 i = 0; i < SavingCache.Num(); ++i)
 		{
-			for(FAttachActor Item : Cast<AFloor>(BuildItem)->AttachActorCache)
+			for(FAttachActor Item : BuildItem->AttachActorCache)
 			{
 				if(Item.Name == SavingCache[i].Building.GetName())
 				{
@@ -246,34 +261,11 @@ bool UBuildSystem::Building()
 					break;
 				}
 			}
-			Cache.Right = Cast<AFloor>(BuildItem)->ArraySide[static_cast<int>(Direction::Right)];
-			Cache.Left = Cast<AFloor>(BuildItem)->ArraySide[static_cast<int>(Direction::Left)];
-			Cache.Up = Cast<AFloor>(BuildItem)->ArraySide[static_cast<int>(Direction::Up)];
-			Cache.Down = Cast<AFloor>(BuildItem)->ArraySide[static_cast<int>(Direction::Down)];
+			Cache.Right = BuildItem->ArraySide[static_cast<int>(Direction::Right)];
+			Cache.Left = BuildItem->ArraySide[static_cast<int>(Direction::Left)];
+			Cache.Up = BuildItem->ArraySide[static_cast<int>(Direction::Up)];
+			Cache.Down = BuildItem->ArraySide[static_cast<int>(Direction::Down)];
 		}
-			
-		/*
-		if(ForceBuild)
-		{
-			if(WhichSide == "Right")
-			{
-				SavingCache[Index].Right = true;
-			}
-			else if(WhichSide == "Left")
-			{
-				SavingCache[Index].Left = true;
-			}
-			else if(WhichSide == "Up")
-			{
-				SavingCache[Index].Up = true;
-			}
-			else if(WhichSide == "Down")
-			{
-				SavingCache[Index].Down = true;
-			}
-		}
-		*/
-
 	}
 	
 	SavingCache.Emplace(Cache);
@@ -281,3 +273,16 @@ bool UBuildSystem::Building()
 	return true;
 }
 
+void UBuildSystem::SwitchType(const FInputActionValue& Value)
+{
+	float AxisValue = Value.Get<float>();
+	if(AxisValue < 0)
+	{
+		CurType.Pre();
+	}
+	else
+	{
+		CurType.Next();
+	}
+	SetBuildItem();
+}

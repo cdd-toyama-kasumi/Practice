@@ -66,6 +66,7 @@ protected:
 	void ThirdPerson();
 
 	void Build();
+	void SwitchBuild(const FInputActionValue& Value);
 	void MouseLeftClick();
 	void MouseRightClick();
 
@@ -140,9 +141,12 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> BuildAction;
-
+		
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UInputAction> BuildingAction;
+	TObjectPtr<UInputAction> SwitchAction;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> SetAction;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> CancelAction;

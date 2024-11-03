@@ -148,6 +148,14 @@ void AMainCharacter::Build()
 	IsBuildMode = !IsBuildMode;
 }
 
+void AMainCharacter::SwitchBuild(const FInputActionValue& Value)
+{
+	if(IsBuildMode == true)
+	{
+		BuildSystem->SwitchType(Value);
+	}
+}
+
 void AMainCharacter::MouseLeftClick()
 {
 	if(IsBuildMode)
@@ -170,7 +178,7 @@ void AMainCharacter::MouseRightClick()
 
 void AMainCharacter::Zoom(const FInputActionValue& Value)
 {
-	if(bUseFirstPerson) return;
+	if(bUseFirstPerson || IsBuildMode) return;
 	SpringArmComponent->TargetArmLength = FMath::Clamp(SpringArmComponent->TargetArmLength + Value.Get<float>() * 50.0f,50.0f,300.0f);
 }
 
@@ -360,8 +368,10 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AMainCharacter::Move);
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMainCharacter::Look);
+		
 		EnhancedInputComponent->BindAction(BuildAction, ETriggerEvent::Started, this, &AMainCharacter::Build);
-		EnhancedInputComponent->BindAction(BuildingAction, ETriggerEvent::Triggered, this, &AMainCharacter::MouseLeftClick);
+		EnhancedInputComponent->BindAction(SwitchAction, ETriggerEvent::Triggered, this, &AMainCharacter::SwitchBuild);
+		EnhancedInputComponent->BindAction(SetAction, ETriggerEvent::Triggered, this, &AMainCharacter::MouseLeftClick);
 		EnhancedInputComponent->BindAction(CancelAction, ETriggerEvent::Triggered, this, &AMainCharacter::MouseRightClick);
 		
 		EnhancedInputComponent->BindAction(ViewAction, ETriggerEvent::Started, this, &AMainCharacter::SwitchPerspective);
