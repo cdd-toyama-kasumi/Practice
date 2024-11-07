@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "BuildBase.generated.h"
 
+class UBuildSystem;
+class AMainCharacter;
 class UBoxComponent;
 
 USTRUCT()
@@ -37,6 +39,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	virtual void OnBlurAttach(UBuildSystem* Caller);
+	
 public:
 	void SetCollision(ECollisionEnabled::Type Type);
 
@@ -100,13 +104,13 @@ public://
 
 public:
 	UPROPERTY(EditDefaultsOnly, Category="BaseParam")
-	float HalfSizeX = 100.0f;
+	float HalfSizeX = 10.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category="BaseParam")
-	float HalfSizeY = 10.0f;
+	float HalfSizeY = 100.0f;
 	
 	UPROPERTY(EditDefaultsOnly, Category="BaseParam")
-	float HalfSizeZ = 150.f;
+	float HalfSizeZ = 100.f;
 
 	//吸附的物体信息
 	UPROPERTY(EditInstanceOnly, Category="Collision")

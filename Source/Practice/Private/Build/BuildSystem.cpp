@@ -111,103 +111,7 @@ void UBuildSystem::BlurAttach()
 {
 	if(BuildItem)
 	{
-		FRotator ViewRotation = MainCharacter->GetController()->GetControlRotation();
-		FVector MainLocation = MainCharacter->GetActorLocation();
-		float AngleControllerPlayer = 90.0f - (360.0f - ViewRotation.Pitch);
-		if(AngleControllerPlayer <= 0.0f)
-		{
-			AngleControllerPlayer = 89.0f;
-		}
-		/*
-		 *camera
-		 *       ↘-------------------------------
-		 *     z p ↘  AngleControllerPlayer
-		 *       p θ ↘
-		 *       p     ↘
-		 *       p      ↘
-		 *       --------- distance = z*tanθ
-		 */
-		BuildDistance = FMath::Tan(FMath::DegreesToRadians(AngleControllerPlayer)) * MainLocation.Z;
-		if(BuildDistance > 600.0f)
-		{
-			BuildDistance = 600.0f;
-		}
-		float X = BuildDistance * FMath::Cos(FMath::DegreesToRadians(ViewRotation.Yaw));
-		float Y = BuildDistance * FMath::Sin(FMath::DegreesToRadians(ViewRotation.Yaw));
-		BuildLocation = FVector(MainLocation.X,MainLocation.Y,MainLocation.Z-50.0f) + FVector(X,Y,0);
-		BuildRotation = ViewRotation.Yaw;
-		
-		FString Msg = FString::Printf(TEXT("Roll:%f Pitch:%f Yaw:%f R:%f Distance:%f X:%f, Y:%f"), ViewRotation.Roll, ViewRotation.Pitch, ViewRotation.Yaw, BuildRotation, BuildDistance,BuildLocation.X,BuildLocation.Y);
-		//LogScreen(1.0f,Msg);
-
-		//检查是否有物体可以附着
-		FString BlockName = BuildItem->BlockActorName;
-		if(BuildItem->IsAttach)
-		{
-			FVector BlockActorLocation = FVector::DownVector;
-			FRotator BlockActorRotation = FRotator::ZeroRotator;
-			for(int32 i = 0; i < SavingCache.Num(); ++i)
-			{
-				if(BlockName == SavingCache[i].Building.GetName())
-				{
-					BlockActorLocation = SavingCache[i].Location;
-					BlockActorRotation = SavingCache[i].Rotation;
-					Index = i;
-					break;
-				}
-			}
-
-			if(BlockActorLocation != FVector::DownVector && (MainCharacter->GetVelocity() == FVector::ZeroVector && FMath::Sqrt(FMath::Square(BuildLocation.X - BlockActorLocation.X) + FMath::Square(BuildLocation.Y - BlockActorLocation.Y)) < 200.0f))
-			{
-				float Side = BuildItem->HalfSizeX * 2;
-				FString AttachSide = BuildItem-> BlockActorSide;
-			
-				ForceBuild = true;
-				BuildItem->ForceBuild = true;
-				if(AttachSide.Contains("Right") && !SavingCache[Index].Right)
-				{
-					BuildLocation.X = BlockActorLocation.X + FMath::Cos(FMath::DegreesToRadians(BlockActorRotation.Yaw)) * Side;
-					BuildLocation.Y = BlockActorLocation.Y + FMath::Sin(FMath::DegreesToRadians(BlockActorRotation.Yaw)) * Side;
-					BuildLocation.Z = BlockActorLocation.Z;
-					WhichSide = "Right";
-					BuildRotation = BlockActorRotation.Yaw;
-				}
-				else if(AttachSide.Contains("Left") && !SavingCache[Index].Left)
-				{
-					BuildLocation.X = BlockActorLocation.X + FMath::Cos(FMath::DegreesToRadians(BlockActorRotation.Yaw + 180)) * Side;
-					BuildLocation.Y = BlockActorLocation.Y + FMath::Sin(FMath::DegreesToRadians(BlockActorRotation.Yaw + 180)) * Side;
-					BuildLocation.Z = BlockActorLocation.Z;
-					WhichSide = "Left";
-					BuildRotation = BlockActorRotation.Yaw;
-				}
-				else if(AttachSide.Contains("Up") && !SavingCache[Index].Up)
-				{
-					BuildLocation.X = BlockActorLocation.X + FMath::Cos(FMath::DegreesToRadians(BlockActorRotation.Yaw + 270)) * Side;
-					BuildLocation.Y = BlockActorLocation.Y + FMath::Sin(FMath::DegreesToRadians(BlockActorRotation.Yaw + 270)) * Side;
-					BuildLocation.Z = BlockActorLocation.Z;
-					WhichSide = "Up";
-					BuildRotation = BlockActorRotation.Yaw;
-				}
-				else if(AttachSide.Contains("Down") && !SavingCache[Index].Down)
-				{
-					BuildLocation.X = BlockActorLocation.X + FMath::Cos(FMath::DegreesToRadians(BlockActorRotation.Yaw + 90)) * Side;
-					BuildLocation.Y = BlockActorLocation.Y + FMath::Sin(FMath::DegreesToRadians(BlockActorRotation.Yaw + 90)) * Side;
-					BuildLocation.Z = BlockActorLocation.Z;
-					WhichSide = "Down";
-					BuildRotation = BlockActorRotation.Yaw;
-				}
-				else
-				{
-					BuildItem->ForceBuild = false;
-					ForceBuild = false;
-				}
-				FString LocationMsg = FString::Printf(TEXT("X:%f Y:%f X:%f Y:%f WhichSide:%s"), BlockActorLocation.X,BlockActorLocation.Y,BuildLocation.X,BuildLocation.Y,*WhichSide);
-                //LogScreen(1.0f,LocationMsg);
-			}
-		}
-		
-		BuildItem->SetActorRotation(FRotator(0,BuildRotation,0));
-		BuildItem->SetActorLocation(BuildLocation);
+		BuildItem->OnBlurAttach(this);
 	}
 }
 
@@ -229,7 +133,15 @@ bool UBuildSystem::Building()
 	BuildItem->IsSet = true;
 
 	FBuildCache Cache;
-	Cache.Type = "floor";
+	switch(CurType.GetType())
+	{
+	case EBuildingType::Floor:
+		Cache.Type = "floor";
+	case EBuildingType::Wall:
+		Cache.Type = "wall";
+	default:
+		break;
+	}
 	Cache.Location = BuildLocation;
 	Cache.Rotation = BuildItem->GetActorRotation();
 	Cache.Building = BuildItem;

@@ -56,7 +56,7 @@ void ABuildBase::BeginPlay()
 
 	LeftSideBoxComponent->OnComponentBeginOverlap.AddDynamic(this, &ABuildBase::LeftSideBeginOverLap);
 	LeftSideBoxComponent->OnComponentEndOverlap.AddDynamic(this, &ABuildBase::LeftSideEndOverLap);
-
+	
 	UpSideBoxComponent->OnComponentBeginOverlap.AddDynamic(this, &ABuildBase::UpSideBeginOverLap);
 	UpSideBoxComponent->OnComponentEndOverlap.AddDynamic(this, &ABuildBase::UpSideEndOverLap);
 
@@ -69,6 +69,11 @@ void ABuildBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void ABuildBase::OnBlurAttach(UBuildSystem* Caller)
+{
+	
 }
 
 void ABuildBase::SetCollision(ECollisionEnabled::Type Type)
@@ -124,7 +129,7 @@ void ABuildBase::RightSideBeginOverLap(UPrimitiveComponent* OverlappedComponent,
 {
 	if(Save(OtherActor->GetName(),OtherComp->GetName()))
 	{
-		LogScreen(10,"Right Begin");
+		//LogScreen(10,"Right Begin");
 		ArraySide[static_cast<int32>(Direction::Right)] = true;
 	}
 }
@@ -134,7 +139,7 @@ void ABuildBase::RightSideEndOverLap(UPrimitiveComponent* OverlappedComponent, A
 {
 	if(Remove(OtherActor->GetName(),OtherComp->GetName()))
 	{
-		LogScreen(10,"Right End");
+		//LogScreen(10,"Right End");
 		ArraySide[static_cast<int32>(Direction::Right)] = false;
 	}
 }
@@ -144,7 +149,7 @@ void ABuildBase::LeftSideBeginOverLap(UPrimitiveComponent* OverlappedComponent, 
 {
 	if(Save(OtherActor->GetName(),OtherComp->GetName()))
 	{
-		LogScreen(10,"Left Begin");
+		//LogScreen(10,"Left Begin");
 		ArraySide[static_cast<int32>(Direction::Left)] = true;
 	}
 }
@@ -154,7 +159,7 @@ void ABuildBase::LeftSideEndOverLap(UPrimitiveComponent* OverlappedComponent, AA
 {
 	if(Remove(OtherActor->GetName(),OtherComp->GetName()))
 	{
-		LogScreen(10,"Left End");
+		//LogScreen(10,"Left End");
 		ArraySide[static_cast<int32>(Direction::Left)] = false;
 	}
 }
@@ -164,7 +169,7 @@ void ABuildBase::UpSideBeginOverLap(UPrimitiveComponent* OverlappedComponent, AA
 {
 	if(Save(OtherActor->GetName(),OtherComp->GetName()))
 	{
-		LogScreen(10,"Up Begin");
+		//LogScreen(10,"Up Begin");
 		ArraySide[static_cast<int32>(Direction::Up)] = true;
 	}
 }
@@ -174,7 +179,7 @@ void ABuildBase::UpSideEndOverLap(UPrimitiveComponent* OverlappedComponent, AAct
 {
 	if(Remove(OtherActor->GetName(),OtherComp->GetName()))
 	{
-		LogScreen(10,"Up End");
+		//LogScreen(10,"Up End");
 		ArraySide[static_cast<int32>(Direction::Up)] = false;
 	}
 }
@@ -184,7 +189,7 @@ void ABuildBase::DownSideBeginOverLap(UPrimitiveComponent* OverlappedComponent, 
 {
 	if(Save(OtherActor->GetName(),OtherComp->GetName()))
 	{
-		LogScreen(10,"Down Begin");
+		//LogScreen(10,"Down Begin");
 		ArraySide[static_cast<int32>(Direction::Down)] = true;
 	}
 }
@@ -194,7 +199,7 @@ void ABuildBase::DownSideEndOverLap(UPrimitiveComponent* OverlappedComponent, AA
 {
 	if(Remove(OtherActor->GetName(),OtherComp->GetName()))
 	{
-		LogScreen(10,"Down End");
+		//LogScreen(10,"Down End");
 		ArraySide[static_cast<int32>(Direction::Down)] = false;
 	}
 }
@@ -235,4 +240,3 @@ bool ABuildBase::Remove(FString Name, FString CompName)
 	}
 	return true;
 }
-

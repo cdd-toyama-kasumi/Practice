@@ -16,10 +16,10 @@ struct FBuildCache
 	GENERATED_BODY()
 
 	UPROPERTY(EditInstanceOnly,Category="base")
-	FVector Location;
+	FVector Location = FVector::ZeroVector;
 	
 	UPROPERTY(EditInstanceOnly,Category="base")
-	FRotator Rotation;
+	FRotator Rotation = FRotator::ZeroRotator;
 
 	UPROPERTY(EditInstanceOnly,Category="base")
 	FString Type;

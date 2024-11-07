@@ -24,7 +24,7 @@ inline FName MouthInsParamUChannel = "UChannel";
 inline FName MouthInsParamVChannel = "VChannel";
 inline FString FloorMat = "Material'/Game/Mine/Scene/Floor/floor_material.floor_material'";
 inline FString FloorMesh = TEXT("StaticMesh'/Game/Mine/Scene/Floor/floor.floor'");
-inline FString WallMesh = TEXT("StaticMesh'/Game/Mine/Scene/wall_full.wall_full'");
+inline FString WallMesh = TEXT("StaticMesh'/Game/Mine/Scene/wall1.wall1'");
 
 inline TMap<FString, FVector2D> MouthTypeMap =
 {

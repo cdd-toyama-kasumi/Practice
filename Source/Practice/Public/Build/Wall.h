@@ -18,6 +18,8 @@ public:
 	// Sets default values for this actor's properties
 	AWall();
 
+	virtual void OnBlurAttach(UBuildSystem* Caller) override;
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
