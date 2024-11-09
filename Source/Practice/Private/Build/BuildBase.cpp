@@ -129,7 +129,6 @@ void ABuildBase::RightSideBeginOverLap(UPrimitiveComponent* OverlappedComponent,
 {
 	if(Save(OtherActor->GetName(),OtherComp->GetName()))
 	{
-		//LogScreen(10,"Right Begin");
 		ArraySide[static_cast<int32>(Direction::Right)] = true;
 	}
 }
@@ -139,8 +138,8 @@ void ABuildBase::RightSideEndOverLap(UPrimitiveComponent* OverlappedComponent, A
 {
 	if(Remove(OtherActor->GetName(),OtherComp->GetName()))
 	{
-		//LogScreen(10,"Right End");
 		ArraySide[static_cast<int32>(Direction::Right)] = false;
+		ForceBuild = false;
 	}
 }
 
@@ -149,7 +148,6 @@ void ABuildBase::LeftSideBeginOverLap(UPrimitiveComponent* OverlappedComponent, 
 {
 	if(Save(OtherActor->GetName(),OtherComp->GetName()))
 	{
-		//LogScreen(10,"Left Begin");
 		ArraySide[static_cast<int32>(Direction::Left)] = true;
 	}
 }
@@ -159,8 +157,8 @@ void ABuildBase::LeftSideEndOverLap(UPrimitiveComponent* OverlappedComponent, AA
 {
 	if(Remove(OtherActor->GetName(),OtherComp->GetName()))
 	{
-		//LogScreen(10,"Left End");
 		ArraySide[static_cast<int32>(Direction::Left)] = false;
+		ForceBuild = false;
 	}
 }
 
@@ -169,7 +167,6 @@ void ABuildBase::UpSideBeginOverLap(UPrimitiveComponent* OverlappedComponent, AA
 {
 	if(Save(OtherActor->GetName(),OtherComp->GetName()))
 	{
-		//LogScreen(10,"Up Begin");
 		ArraySide[static_cast<int32>(Direction::Up)] = true;
 	}
 }
@@ -179,8 +176,8 @@ void ABuildBase::UpSideEndOverLap(UPrimitiveComponent* OverlappedComponent, AAct
 {
 	if(Remove(OtherActor->GetName(),OtherComp->GetName()))
 	{
-		//LogScreen(10,"Up End");
 		ArraySide[static_cast<int32>(Direction::Up)] = false;
+		ForceBuild = false;
 	}
 }
 
@@ -189,7 +186,6 @@ void ABuildBase::DownSideBeginOverLap(UPrimitiveComponent* OverlappedComponent, 
 {
 	if(Save(OtherActor->GetName(),OtherComp->GetName()))
 	{
-		//LogScreen(10,"Down Begin");
 		ArraySide[static_cast<int32>(Direction::Down)] = true;
 	}
 }
@@ -199,8 +195,8 @@ void ABuildBase::DownSideEndOverLap(UPrimitiveComponent* OverlappedComponent, AA
 {
 	if(Remove(OtherActor->GetName(),OtherComp->GetName()))
 	{
-		//LogScreen(10,"Down End");
 		ArraySide[static_cast<int32>(Direction::Down)] = false;
+		ForceBuild = false;
 	}
 }
 

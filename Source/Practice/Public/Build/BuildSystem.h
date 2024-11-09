@@ -10,6 +10,12 @@
 class AMainCharacter;
 class ABuildBase;
 
+enum class EBuildingType : uint8
+{
+	Floor,
+	Wall
+};
+
 USTRUCT()
 struct FBuildCache
 {
@@ -20,9 +26,8 @@ struct FBuildCache
 	
 	UPROPERTY(EditInstanceOnly,Category="base")
 	FRotator Rotation = FRotator::ZeroRotator;
-
-	UPROPERTY(EditInstanceOnly,Category="base")
-	FString Type;
+	
+	EBuildingType Type;
 	
 	UPROPERTY(EditInstanceOnly,Category="base")
 	bool Up = false;
@@ -37,15 +42,8 @@ struct FBuildCache
 	bool Right = false;
 
 	UPROPERTY(EditInstanceOnly,Category="base")
-	TObjectPtr<UObject> Building = nullptr;
+	TObjectPtr<ABuildBase> Building = nullptr;
 };
-
-enum EBuildingType
-{
-	Floor,
-	Wall
-};
-
 
 class FBuildType
 {
@@ -58,7 +56,7 @@ public:
 
 	bool operator==(const EBuildingType& Type);
 	
-	TArray<EBuildingType> BuildingTypeArray{Floor, Wall};
+	TArray<EBuildingType> BuildingTypeArray{EBuildingType::Floor, EBuildingType::Wall};
 	int32 CurIndex = 0;
 };
 
@@ -109,9 +107,6 @@ public:
 	
 	UPROPERTY(EditInstanceOnly, Category="Base")
 	TArray<FBuildCache> SavingCache;
-
-	UPROPERTY(EditDefaultsOnly, Category="Base")
-	bool ForceBuild = true;
 	
 	UPROPERTY(VisibleAnywhere, Category="Base")
 	int32 Index = 0;

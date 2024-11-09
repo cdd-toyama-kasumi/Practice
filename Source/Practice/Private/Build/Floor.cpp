@@ -76,9 +76,9 @@ void AFloor::OnBlurAttach(UBuildSystem* Caller)
 		//LogScreen(1.0f,Msg);
 
 		//检查是否有物体可以附着
-		FString BlockName = BlockActorName;
 		if(IsAttach)
 		{
+			FString BlockName = BlockActorName;
 			FVector BlockActorLocation = FVector::DownVector;
 			FRotator BlockActorRotation = FRotator::ZeroRotator;
 			for(int32 i = 0; i < Caller->SavingCache.Num(); ++i)
@@ -96,8 +96,7 @@ void AFloor::OnBlurAttach(UBuildSystem* Caller)
 			{
 				float Side = Caller->BuildItem->HalfSizeX * 2;
 				FString AttachSide = Caller->BuildItem-> BlockActorSide;
-			
-				ForceBuild = true;
+				
 				Caller->BuildItem->ForceBuild = true;
 				if(AttachSide.Contains("Right") && !Caller->SavingCache[Caller->Index].Right)
 				{
@@ -134,8 +133,12 @@ void AFloor::OnBlurAttach(UBuildSystem* Caller)
 				else
 				{
 					Caller->BuildItem->ForceBuild = false;
-					ForceBuild = false;
 				}
+				if(Caller->BuildItem->ForceBuild && IsBlock)
+				{
+					SetBlur(0.1,FColor::Green);
+				}
+
 				FString LocationMsg = FString::Printf(TEXT("X:%f Y:%f X:%f Y:%f WhichSide:%s"), BlockActorLocation.X,BlockActorLocation.Y,Caller->BuildLocation.X,Caller->BuildLocation.Y,*Caller->WhichSide);
                 //LogScreen(1.0f,LocationMsg);
 			}

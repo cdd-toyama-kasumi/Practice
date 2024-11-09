@@ -121,9 +121,14 @@ bool UBuildSystem::Building()
 	{
 		return false;
 	}
-	if(BuildItem->IsBlock && !ForceBuild)
+	if(BuildItem->IsBlock && !BuildItem->ForceBuild)
 	{
 		LogScreen(1.0f,FString::Printf(TEXT("%ls:Building is blocked"), *BuildItem->GetName()));
+		return false;
+	}
+	else if(CurType == EBuildingType::Wall && !BuildItem->ArraySide[static_cast<int32>(Direction::Down)])
+	{//需要地基才能放置墙壁
+		LogScreen(1.0f,FString::Printf(TEXT("%ls:Wall need a floor to build"), *BuildItem->GetName()));
 		return false;
 	}
 	
@@ -133,15 +138,8 @@ bool UBuildSystem::Building()
 	BuildItem->IsSet = true;
 
 	FBuildCache Cache;
-	switch(CurType.GetType())
-	{
-	case EBuildingType::Floor:
-		Cache.Type = "floor";
-	case EBuildingType::Wall:
-		Cache.Type = "wall";
-	default:
-		break;
-	}
+
+	Cache.Type = CurType.GetType();
 	Cache.Location = BuildLocation;
 	Cache.Rotation = BuildItem->GetActorRotation();
 	Cache.Building = BuildItem;
